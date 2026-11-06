@@ -1,0 +1,354 @@
+/* Hallmark · module of app/globals.css (stamp, tokens, focus ring, reduced motion) · posture: committed */
+/* Hallmark · dismissed 23 · the orange station name and the three-pulse wash on a new order are the arrival signal read from across the kitchen; the wash fades to zero in three seconds */
+/* Read from across the kitchen: nothing here is clickable, nothing needs a cursor. */
+.screen {
+  --k-number: 6rem;
+  --k-item: 2.074rem;
+  --k-sauce: 1.728rem;
+  --k-min-col: 26rem;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--gutter) var(--space-lg);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  cursor: none;
+  user-select: none;
+}
+
+.screen[data-density="medium"] {
+  --k-number: 4.5rem;
+  --k-item: 1.728rem;
+  --k-sauce: 1.44rem;
+  --k-min-col: 24rem;
+}
+
+.screen[data-density="compact"] {
+  --k-number: 3.5rem;
+  --k-item: 1.44rem;
+  --k-sauce: 1.2rem;
+  --k-min-col: 19rem;
+}
+
+.screen[data-density="tiny"] {
+  --k-number: 2.5rem;
+  --k-item: 1.2rem;
+  --k-sauce: 1rem;
+  --k-min-col: 15rem;
+}
+
+.hidden {
+  padding: var(--space-2xs) var(--space-sm);
+  border-radius: var(--radius-control);
+  border: var(--rule-strong) solid var(--color-urgent);
+  color: var(--color-urgent);
+  font-weight: 700;
+  font-size: var(--text-xl);
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-lg);
+  padding-bottom: var(--space-sm);
+  border-bottom: var(--rule-strong) solid var(--color-rule);
+}
+
+.title {
+  font-size: var(--text-display-s);
+  color: var(--color-accent);
+}
+
+.count {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-ink-2);
+}
+
+.clock {
+  margin-inline-start: auto;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-display-s);
+  line-height: 1;
+}
+
+.status {
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-control);
+  font-weight: 700;
+  font-size: var(--text-xl);
+  background: var(--color-paper-2);
+  color: var(--color-muted);
+}
+
+.status[data-tone="error"] {
+  color: var(--color-urgent);
+  border: var(--rule-strong) solid var(--color-urgent);
+}
+
+/* ---------- Empty ---------- */
+.waiting {
+  flex: 1;
+  display: grid;
+  place-content: center;
+  gap: var(--space-sm);
+  text-align: center;
+}
+
+.waitingTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 1;
+  color: var(--color-ink-2);
+}
+
+.waitingText {
+  font-size: var(--text-2xl);
+  color: var(--color-muted);
+  max-width: none;
+}
+
+/* ---------- The board ---------- */
+.board {
+  container-type: inline-size;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--k-min-col)), 1fr));
+  /* Rows take their content's height: a card is never squeezed, it overflows and the board steps down a size */
+  grid-auto-rows: max-content;
+  align-content: start;
+  gap: var(--space-md);
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg) var(--space-md);
+  border-radius: var(--radius-card);
+  border: 3px solid var(--color-rule);
+  background: var(--color-paper-2);
+  overflow: hidden;
+}
+
+/* A new order: a solid orange frame, and a wash that pulses three times */
+.card[data-new] {
+  border-color: var(--color-accent);
+}
+
+.card[data-new]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent);
+  opacity: 0;
+  pointer-events: none;
+  animation: arrive 1s var(--ease-out) 3;
+}
+
+@keyframes arrive {
+  0% { opacity: 0.45; }
+  100% { opacity: 0; }
+}
+
+.card[data-last-minute] {
+  border-color: var(--color-urgent);
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--k-number);
+  line-height: 0.9;
+  letter-spacing: var(--tracking-display);
+}
+
+.timing {
+  display: grid;
+  justify-items: end;
+  gap: var(--space-2xs);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.newTag {
+  padding: var(--space-xs) var(--space-md);
+  line-height: 1.25;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.items {
+  flex: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  align-content: start;
+  gap: var(--space-sm);
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 2.2ch minmax(0, 1fr);
+  column-gap: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+.qty,
+.name {
+  font-size: var(--k-item);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.qty {
+  color: var(--color-accent);
+  text-align: end;
+}
+
+.name {
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.sauce {
+  grid-column: 2;
+  font-size: var(--k-sauce);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-accent);
+}
+
+.sauce[data-none] {
+  color: var(--color-ink-2);
+}
+
+.note {
+  grid-column: 2;
+  font-size: var(--k-sauce);
+  font-style: italic;
+  color: var(--color-ink-2);
+}
+
+/* ---------- The five minutes, draining ---------- */
+.progress {
+  display: grid;
+  gap: var(--space-2xs);
+  padding-top: var(--space-xs);
+}
+
+.track {
+  height: 14px;
+  border-radius: var(--radius-pill);
+  background: var(--color-paper-3);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-accent);
+  transform-origin: left center;
+  transition: transform 1s linear;
+}
+
+[dir="rtl"] .fill {
+  transform-origin: right center;
+}
+
+.card[data-last-minute] .fill {
+  background: var(--color-urgent);
+}
+
+.remaining {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.card[data-last-minute] .remaining {
+  color: var(--color-urgent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card[data-new]::after {
+    animation: none;
+  }
+  .fill {
+    transition: none;
+  }
+}
+
+/* ---------- Sound: the startup screen and the header indicator ---------- */
+.soundOff {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-control);
+  border: var(--rule-strong) solid var(--color-urgent);
+  color: var(--color-urgent);
+  font-weight: 700;
+  font-size: var(--text-md);
+  line-height: 1.3;
+}
+
+/* The one moment this screen takes input: a tap or a key unlocks the sound */
+.prompt {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: grid;
+  place-items: center;
+  padding: var(--space-lg) var(--gutter);
+  background: var(--color-overlay-kitchen);
+  cursor: auto;
+}
+
+.promptBox {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-md);
+  width: min(100%, 36rem);
+  padding: var(--space-xl) var(--space-lg);
+  border-radius: var(--radius-card);
+  border: 3px solid var(--color-accent);
+  background: var(--color-paper-2);
+  text-align: center;
+}
+
+.promptTitle {
+  font-size: var(--text-display);
+  color: var(--color-ink);
+}
+
+.promptText {
+  font-size: var(--text-xl);
+  color: var(--color-ink-2);
+  max-width: 30ch;
+}
+
+.promptButton {
+  min-height: 72px;
+  padding-inline: var(--space-xl);
+  font-size: var(--text-2xl);
+}

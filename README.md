@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# M3i9dat Ba Mbarek: ordering system
 
-## Getting Started
+Real-time ordering for the snack shop in Meknès: a touch cashier that prints two 80mm tickets, a hands-off kitchen screen, and an admin back office. Next.js 16 (App Router) + Firebase (Auth, Firestore, Storage). Prices in MAD, UI in French (all strings in `lib/i18n/fr.ts`).
 
-First, run the development server:
+## Routes
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+| Route | Who | What |
+| --- | --- | --- |
+| `/login` | everyone | Email/password sign-in, then each account goes to its station |
+| `/cashier` | cashier, admin | Product grid, cart with per-line sauce choice, "Valider la commande" saves and prints two tickets |
+| `/kitchen` | kitchen, admin | Wall screen, no controls: live orders, each shown exactly 5 minutes from `createdAt` |
+| `/admin` | admin | Products (CRUD, photo, availability, order), sauces, order history by day with daily total |
+| `/preview/*` | development only | The three screens on fixture data (real menu, sample orders) for design review; 404 in production. `/preview/kitchen?n=14` crowds the board, `?sound=prompt`, `?sound=locked` or `?sound=real` show the sound states |
+
+## Setup
+
+1. `npm install`
+2. Copy `.env.example` to `.env.local` and fill in the Firebase web config (Project settings > Your apps). These values are public by design; the rules do the protecting.
+3. Firebase console:
+   - **Authentication > Sign-in method**: enable Email/Password.
+   - **Firestore**: create the database (it exists on `m3i9dat`).
+   - **Storage > Get started**: needed for product photos. New projects need the Blaze plan for Storage. Without it, run the menu import with `--no-upload` (see below).
+4. Deploy the rules (Firebase CLI, `npm i -g firebase-tools`, then `firebase login`):
+   ```
+   firebase deploy --only firestore:rules,storage
+   ```
+   On the first deploy the CLI asks to let Storage read Firestore (storage.rules checks the admin role in `users/{uid}`): answer yes, or photo uploads are refused.
+5. Recommended: **Authentication > Settings > User actions**, untick "Enable create (sign-up)". Staff accounts come from the script below; nobody needs to self-register. (The rules already give an account without a role nothing.)
+6. `npm run dev`, open http://localhost:3000
+
+## Users and roles
+
+Roles live in `users/{uid}.role` (`admin`, `cashier`, `kitchen`). The rules only let an admin assign roles, so accounts are created with the Admin SDK:
+
+1. Firebase console > Project settings > Service accounts > **Generate new private key**. Save the JSON **outside the repo** and set its path in `.env.local`:
+   `GOOGLE_APPLICATION_CREDENTIALS=C:\keys\m3i9dat-service-account.json`
+2. Create the first admin, then the staff:
+   ```
+   npm run user:create -- --email patron@example.com --role admin
+   npm run user:create -- --email caisse@example.com --role cashier
+   npm run user:create -- --email cuisine@example.com --role kitchen
+   ```
+   Without `--password` a random one is printed once. Running it again for an existing email changes the role (and the password if given).
+
+## Menu import (Glovo)
+
+```
+npm run import:glovo -- --dry-run      # fetch the Glovo page, write seed/products.json, touch nothing
+npm run import:glovo                   # + copy photos into Storage and create the products
+npm run import:glovo -- --no-upload    # keep Glovo's image URLs (Storage not enabled)
+npm run import:glovo -- --from-json seed/products.json   # import a hand-edited file
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The script reads the menu embedded in the public store page. Last run (2026-11-06): 21 products in 5 categories. Products are created with stable ids (`glovo-<id>`), so a re-run skips existing ones unless `--overwrite`. Things to check after importing:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Prices are Glovo prices, which can differ from in-shop prices. Edit them in `/admin`.
+- Names are kept exactly as on Glovo (several are in Arabic).
+- Products where Glovo asks "حار / بدون حار" get the Tomate and Piquante sauces; drinks and معيقدات get none. Adjust per product in `/admin`.
+- Glovo's other options (drink choice in combos, egg or no egg) and ingredient descriptions are not imported. They are kept for reference in `seed/products.json`. The cashier's per-line note covers them.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+If the page ever blocks the script or changes shape, it stops without importing anything; fill `seed/products.template.json` by hand and use `--from-json`.
 
-## Learn More
+## How it works
 
-To learn more about Next.js, take a look at the following resources:
+- **Order numbers** restart at 1 every day (Africa/Casablanca). One Firestore transaction bumps `counters/{YYYY-MM-DD}` and creates the order; the rules only accept the two together (the counter moves by exactly one and names the order created in the same write), and the day must be today's.
+- **No duplicate orders.** The cashier screen picks the order's document id (a Firestore auto-id) before the first save attempt and keeps it in `localStorage` until the save is confirmed. Every retry uses the same id; the transaction first reads `orders/{id}` and, if an earlier attempt was saved but its answer lost, returns that order (same number) and writes nothing. The id is dropped after a confirmed save or when the cashier taps "Vider" to start a new cart. If the cart was edited between the lost save and the retry, the screen says so: the tickets show the saved order, the one the kitchen has. Item prices and totals are computed by the cashier screen and only bounded by the rules; full server-side price checking would need a Cloud Function. Transactions need the network: offline, validation fails with a clear message and the cart is kept (also in `localStorage`, so a reload keeps it).
+- **Tickets** print with `window.print()` and `@media print`, sized for an 80mm roll, one ticket per page (customer ticket with prices, then the kitchen ticket with large items). In the print dialog pick the thermal printer, margins none, scale 100%. For silent printing on the cashier PC, start Chrome with `--kiosk-printing`.
+- **Kitchen timing** uses server time: each kitchen screen measures its clock against Firestore every 10 minutes (`clock/{uid}`) and derives everything from `createdAt` on a 1-second tick, so a refresh shows the same board. The board shrinks text until every card fits; if a small screen still cannot hold them all, the header says how many do not fit. Use a 1080p screen or larger.
+- **Kitchen sound**: a short, loud two-note chime (generated with the Web Audio API, no audio file) plays for each new order, never for the orders already on screen when the page loads. Browsers block audio until someone touches the page, so:
+  - at startup `/kitchen` shows an **"Activer le son"** screen once per browser session: one tap, click or key press unlocks the sound and it disappears;
+  - after a refresh the browser locks audio again: the header shows **"Son désactivé : touchez l'écran pour l'activer"** until someone taps anywhere;
+  - **kiosk option** (nothing to tap, ever): start Chrome with `--autoplay-policy=no-user-gesture-required`, ideally with `--kiosk`, e.g. `chrome.exe --kiosk --autoplay-policy=no-user-gesture-required https://<your-site>/kitchen`. Audio is then allowed at load and neither the start screen nor the indicator appear.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+  The orange flash on new orders works in every case. The screen also asks the browser to stay awake (Wake Lock).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Commands
 
-## Deploy on Vercel
+| Command | |
+| --- | --- |
+| `npm run dev` / `build` / `start` | Next.js |
+| `npm test` | Unit tests (cart and sauce rules, order retries without duplicates, kitchen 5-minute window, new-order detection) |
+| `npm run typecheck`, `npm run lint` | TypeScript, ESLint |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Known limits
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Rules have not been run in the Firebase emulator (it needs Java). Deploy them to a test project first, or run `firebase emulators:start` where Java is available.
+- Changing a product image deletes the old file; deleting a sauce from the list does not remove it from products (it simply stops being offered).
+
+## Arabic later
+
+Copy `lib/i18n/fr.ts` to `ar.ts`, translate the values (TypeScript checks the keys), register it in `lib/i18n/index.ts` and set `dir = "rtl"`. Layout uses logical properties where it matters (the kitchen progress bar already flips in RTL).

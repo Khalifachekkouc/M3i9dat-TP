@@ -1,0 +1,15 @@
+{
+  "source": "manual",
+  "fetchedAt": "",
+  "note": "Fill one object per product, then run: npm run import:glovo -- --from-json seed/products.template.json. imageUrl may be a public image URL (copied into Storage) or empty. sauceOptions: sauces the cashier offers for this product, empty for drinks.",
+  "products": [
+    {
+      "name": "",
+      "price": 0,
+      "category": "",
+      "imageUrl": "",
+      "available": true,
+      "sauceOptions": ["Tomate", "Piquante"]
+    }
+  ]
+}

@@ -1,49 +1,133 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Hallmark · shape: app screen · genre: playful · theme: custom · idea: "the order number called across the counter runs every screen" · vibe: "loud orange street counter, fast hands, big numbers"
+ * paper: oklch(97.4% 0.012 75) · accent: oklch(67% 0.172 48) · display: Antonio · body: Figtree
+ * nav: espresso top bar, orange wordmark, role links · signature: the order number, set huge on the validated ticket and on every kitchen card · states: loading, empty, error, offline, full
+ * axes: light/display-condensed/chromatic-orange (kitchen: dark/display-condensed/chromatic-orange) · posture: committed (espresso bar and orange signal) · contrast: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H5 E4 S4 R4 V4 · weakest: E, the kitchen sound cannot play without a gesture in a default browser; documented the kiosk flag and kept the visual flash as the guaranteed signal */
+/* Hallmark · dismissed F4 · the extra fills are selected states (aria-pressed chips and toggles), not actions; each screen has one filled action, Valider, Enregistrer or Ajouter */
+@import url("./tokens.css");
+@import url("./base.css");
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html {
-  height: 100%;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
+/* ---------- Buttons: one filled primary per screen ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-height: var(--control-h);
+  padding: var(--space-xs) var(--space-md);
+  border: var(--rule-hair) solid var(--color-edge);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-weight: 700;
+  font-size: var(--text-md);
+  line-height: 1.2;
+  white-space: nowrap;
   text-decoration: none;
+  touch-action: manipulation;
+  transition: background-color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out), transform var(--dur-micro) var(--ease-out);
+}
+.btn:hover { background: var(--color-paper-2); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; transform: none; }
+.btn[aria-busy="true"] { cursor: progress; }
+.btn[aria-pressed="true"] { background: var(--color-accent-soft); border-color: var(--color-accent-strong); }
+
+.btn-primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent-strong);
+  color: var(--color-accent-ink);
+}
+.btn-primary:hover { background: var(--color-accent-strong); }
+.btn-primary:disabled:hover { background: var(--color-accent); }
+
+.btn-ghost { background: transparent; border-color: transparent; }
+.btn-ghost:hover { background: var(--color-paper-2); }
+
+.btn-danger { color: var(--color-error); border-color: currentColor; background: var(--color-surface); }
+.btn-danger:hover { background: var(--color-error-soft); }
+
+.btn-lg { min-height: 56px; padding: var(--space-sm) var(--space-lg); font-size: var(--text-lg); }
+.btn-icon { min-width: var(--control-h); padding: var(--space-xs); }
+
+/* A coarse pointer (the POS tablet) gets the 48px hit target */
+@media (pointer: coarse) {
+  .btn { min-height: var(--tap); }
+  .btn-icon { min-width: var(--tap); }
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+/* ---------- Fields ---------- */
+.field { display: grid; gap: var(--space-2xs); min-width: 0; }
+.field-label { font-size: var(--text-sm); font-weight: 700; color: var(--color-ink-2); }
+.field-help { min-height: 1lh; font-size: var(--text-sm); color: var(--color-muted); }
+.field-help[data-error="true"] { color: var(--color-error); }
+.input {
+  width: 100%;
+  min-height: var(--control-h);
+  padding: var(--space-xs) var(--space-sm);
+  border: var(--rule-hair) solid var(--color-edge);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--text-md);
+}
+.input:hover { border-color: var(--color-muted); }
+.input:focus-visible { outline: 3px solid var(--color-focus); outline-offset: -1px; }
+.input[aria-invalid="true"] { border-color: var(--color-error); }
+.input:disabled { opacity: 0.55; cursor: not-allowed; }
+@media (pointer: coarse) { .input { min-height: var(--tap); } }
+
+/* ---------- Chips (sauces, categories) ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-height: var(--control-h);
+  padding: var(--space-2xs) var(--space-md);
+  border: var(--rule-strong) solid var(--color-rule);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-weight: 700;
+  font-size: var(--text-md);
+  white-space: nowrap;
+  touch-action: manipulation;
+  transition: background-color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+}
+.chip:hover { border-color: var(--color-rule-strong); }
+.chip:active { transform: scale(0.97); }
+.chip[aria-pressed="true"], .chip[aria-selected="true"] {
+  background: var(--color-accent);
+  border-color: var(--color-accent-strong);
+  color: var(--color-accent-ink);
+}
+.chip:disabled { opacity: 0.55; cursor: not-allowed; }
+@media (pointer: coarse) { .chip { min-height: var(--tap); } }
+
+/* ---------- Skeleton, banners ---------- */
+.skeleton { border-radius: var(--radius-card); background: var(--color-paper-3); animation: skeleton-pulse 1.4s var(--ease-out) infinite alternate; }
+@keyframes skeleton-pulse { from { opacity: 1; } to { opacity: 0.55; } }
+
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-control);
+  border: var(--rule-hair) solid currentColor;
+  font-weight: 700;
+}
+.banner[data-tone="error"] { color: var(--color-error); background: var(--color-error-soft); }
+.banner[data-tone="success"] { color: var(--color-success); background: var(--color-success-soft); }
+.banner[data-tone="info"] { color: var(--color-ink-2); background: var(--color-paper-2); border-color: var(--color-rule); }
+.banner > span { flex: 1 1 16rem; min-width: 0; }
+
+/* ---------- Print: hidden on screen, the tickets own the paper ---------- */
+.print-only { display: none; }
+@page { size: 80mm auto; margin: 0; }
+@media print {
+  html, body { background: none; }
+  .screen-only { display: none !important; }
+  .print-only { display: block; }
 }

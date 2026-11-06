@@ -6,9 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "user:create": "tsx scripts/create-user.ts",
+    "import:glovo": "tsx scripts/import-glovo.ts",
+    "test": "tsx --test lib/*.test.ts"
   },
   "dependencies": {
+    "firebase": "^12.19.0",
     "next": "16.4.5",
     "react": "19.3.0",
     "react-dom": "19.3.0"
@@ -19,6 +24,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
+    "firebase-admin": "^14.5.0",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

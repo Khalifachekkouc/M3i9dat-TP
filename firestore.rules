@@ -1,0 +1,173 @@
+rules_version = '2';
+
+// M3i9dat Ba Mbarek: role-based access.
+// Roles live in users/{uid}.role and can only be set by an admin (or the
+// Admin SDK seed script). Nothing in this file is ever open to the public.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function profilePath() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+
+    function hasRole(roles) {
+      return signedIn()
+        && exists(profilePath())
+        && get(profilePath()).data.role in roles;
+    }
+
+    function isAdmin() {
+      return hasRole(['admin']);
+    }
+
+    // A signed-in account is not enough: it must also have a staff role.
+    // (Anyone holding the public web config could otherwise self-register.)
+    function isStaff() {
+      return hasRole(['admin', 'cashier', 'kitchen']);
+    }
+
+    // Rules cannot loop over a list, so only its type and length are checked.
+    function isBoundedList(value, maxItems) {
+      return value is list && value.size() <= maxItems;
+    }
+
+    // ---------- users (roles) ----------
+    match /users/{uid} {
+      // A user may read their own profile (to learn their role); admins read all.
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      // Only admins assign roles. Nobody can promote themselves.
+      allow create, update: if isAdmin()
+        && request.resource.data.role in ['admin', 'cashier', 'kitchen'];
+      // An admin cannot delete their own profile (avoids locking everyone out).
+      allow delete: if isAdmin() && request.auth.uid != uid;
+    }
+
+    // ---------- products ----------
+    function validProduct(p) {
+      return p.keys().hasAll(['name', 'price', 'category', 'imageUrl', 'available', 'sauceOptions', 'order', 'createdAt'])
+        && p.keys().hasOnly(['name', 'price', 'category', 'imageUrl', 'imagePath', 'available', 'sauceOptions', 'order', 'createdAt'])
+        && p.name is string && p.name.size() > 0 && p.name.size() <= 80
+        && (p.price is int || p.price is float) && p.price >= 0 && p.price <= 10000
+        && p.category is string && p.category.size() > 0 && p.category.size() <= 40
+        && p.imageUrl is string && p.imageUrl.size() <= 2048
+        && p.available is bool
+        && isBoundedList(p.sauceOptions, 20)
+        && (p.order is int || p.order is float);
+    }
+
+    match /products/{productId} {
+      allow read: if isStaff();
+      allow create: if isAdmin()
+        && validProduct(request.resource.data)
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAdmin()
+        && validProduct(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin();
+    }
+
+    // ---------- settings (sauces list) ----------
+    match /settings/sauces {
+      allow read: if isStaff();
+      allow write: if isAdmin()
+        && request.resource.data.keys().hasOnly(['list'])
+        && isBoundedList(request.resource.data.list, 30);
+    }
+
+    // ---------- daily order counters ----------
+    // counters/{YYYY-MM-DD} = { value: <last number of that day>, lastOrderId }.
+    // Only ever moves up by exactly one, and only in the same write that
+    // creates the order (lastOrderId) carrying the new number: no gaps, no reuse.
+    function orderDoc(orderId) {
+      return /databases/$(database)/documents/orders/$(orderId);
+    }
+
+    function createsOrder(day, number, orderId) {
+      return orderId is string
+        && existsAfter(orderDoc(orderId))
+        && getAfter(orderDoc(orderId)).data.number == number
+        && getAfter(orderDoc(orderId)).data.day == day;
+    }
+
+    match /counters/{day} {
+      allow read: if hasRole(['cashier', 'admin']);
+      allow create: if hasRole(['cashier', 'admin'])
+        && request.resource.data.keys().hasOnly(['value', 'lastOrderId'])
+        && request.resource.data.value == 1
+        && createsOrder(day, 1, request.resource.data.lastOrderId);
+      allow update: if hasRole(['cashier', 'admin'])
+        && request.resource.data.keys().hasOnly(['value', 'lastOrderId'])
+        && request.resource.data.value == resource.data.value + 1
+        && createsOrder(day, request.resource.data.value, request.resource.data.lastOrderId);
+      // Never deleted: numbering for that day would restart at 1.
+    }
+
+    // ---------- orders ----------
+    // "YYYY-MM-DD" whose date is within a day and a half of the server clock
+    // (the shop day is Africa/Casablanca, the comparison is in UTC).
+    function plausibleDay(day) {
+      return day is string
+        && day.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && dayNear(timestamp.date(int(day.split('-')[0]), int(day.split('-')[1]), int(day.split('-')[2])));
+    }
+
+    function dayNear(start) {
+      return request.time > start - duration.value(12, 'h')
+        && request.time < start + duration.value(36, 'h');
+    }
+
+    function counterPath(day) {
+      return /databases/$(database)/documents/counters/$(day);
+    }
+
+    function validItems(items) {
+      // Rules have no loops: the shape of each item is enforced by the app,
+      // the list itself is bounded here.
+      return items is list && items.size() > 0 && items.size() <= 60;
+    }
+
+    // Order ids are Firestore auto-ids chosen by the cashier screen before the
+    // first attempt and reused on retries, so a retry finds the saved order
+    // instead of creating a copy. A retry that finds it writes nothing.
+    match /orders/{orderId} {
+      allow read: if hasRole(['cashier', 'kitchen', 'admin']);
+
+      allow create: if hasRole(['cashier', 'admin'])
+        && request.resource.data.keys().hasOnly(['number', 'day', 'items', 'total', 'createdAt', 'createdBy'])
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && plausibleDay(request.resource.data.day)
+        && request.resource.data.number is int
+        && orderId.matches('^[A-Za-z0-9]{20}$')
+        // The counter moves from number - 1 to number in this same write, naming this order.
+        && (exists(counterPath(request.resource.data.day))
+              ? get(counterPath(request.resource.data.day)).data.value == request.resource.data.number - 1
+              : request.resource.data.number == 1)
+        && getAfter(counterPath(request.resource.data.day)).data.value == request.resource.data.number
+        && getAfter(counterPath(request.resource.data.day)).data.lastOrderId == orderId
+        && validItems(request.resource.data.items)
+        && (request.resource.data.total is int || request.resource.data.total is float)
+        && request.resource.data.total >= 0
+        && request.resource.data.total <= 100000;
+
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------- clock probes (server time for the kitchen screen) ----------
+    // Each staff device writes request.time to its own doc and reads it
+    // back to measure how far its clock is from the server clock.
+    match /clock/{uid} {
+      allow read: if isStaff() && request.auth.uid == uid;
+      allow write: if isStaff() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['t'])
+        && request.resource.data.t == request.time;
+    }
+
+    // Everything else is closed.
+  }
+}

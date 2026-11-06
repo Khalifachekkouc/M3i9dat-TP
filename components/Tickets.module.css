@@ -1,0 +1,149 @@
+/* Hallmark · print-only module of app/globals.css; mm and pt sizes are paper measurements for the 80mm roll, not screen spacing */
+/* 80mm roll, about 72mm printable (the @page size is in globals.css). Ink only: thermal paper has no colour. */
+.root {
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.ticket {
+  width: 72mm;
+  margin: 0 auto;
+  padding: 3mm 2mm 6mm;
+  font-size: 10.5pt;
+  line-height: 1.3;
+}
+
+/* One ticket per printed page: the printer cuts (or the cashier tears) between them */
+.ticket + .ticket {
+  break-before: page;
+  page-break-before: always;
+}
+
+.ticket p {
+  margin: 0;
+  max-width: none;
+}
+
+.shop {
+  font-family: var(--font-display);
+  font-size: 20pt;
+  font-weight: 700;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.small {
+  font-size: 9pt;
+  text-align: center;
+}
+
+.copy {
+  font-size: 9pt;
+  font-weight: 700;
+  text-align: center;
+}
+
+.rule {
+  margin: 2mm 0;
+  border-top: 1px dashed var(--color-ink);
+}
+
+.ruleStrong {
+  margin: 2mm 0;
+  border-top: 2px solid var(--color-ink);
+}
+
+.customerNumber {
+  font-family: var(--font-display);
+  font-size: 22pt;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.lines {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lines td {
+  padding: 1mm 0;
+  vertical-align: top;
+}
+
+.itemName {
+  display: block;
+  font-weight: 700;
+}
+
+.detail {
+  display: block;
+  font-size: 9pt;
+}
+
+.price {
+  text-align: right;
+  white-space: nowrap;
+  font-weight: 700;
+  padding-left: 2mm !important;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14pt;
+  font-weight: 700;
+}
+
+.thanks {
+  text-align: center;
+  font-size: 9pt;
+}
+
+/* ---------- Shop ticket: read at arm's length over the grill ---------- */
+.kitchenNumber {
+  font-family: var(--font-display);
+  font-size: 54pt;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+
+.kitchenItems {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.kitchenItem {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 2mm;
+  padding: 2mm 0;
+  border-bottom: 1px dashed var(--color-ink);
+}
+
+.kitchenQty,
+.kitchenName {
+  font-size: 16pt;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.kitchenSauce,
+.kitchenNote {
+  grid-column: 2;
+  font-size: 13pt;
+  font-weight: 700;
+}
+
+.kitchenNote {
+  font-weight: 400;
+}
+
+@media print {
+  .root {
+    display: block;
+  }
+}

@@ -1,0 +1,130 @@
+/* Hallmark · module of app/globals.css (stamp, tokens, focus ring, reduced motion) · posture: committed */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky-nav);
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  min-height: var(--topbar-height);
+  padding: var(--space-xs) var(--gutter);
+  background: var(--color-field);
+  color: var(--color-field-ink);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-2xl);
+  line-height: 1;
+  color: var(--color-accent);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.wordmark:hover {
+  color: var(--color-field-ink);
+}
+
+.nav {
+  display: flex;
+  gap: var(--space-2xs);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-h);
+  padding: var(--space-2xs) var(--space-sm);
+  border-radius: var(--radius-control);
+  color: var(--color-field-muted);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+}
+
+.link:hover {
+  background: var(--color-field-2);
+  color: var(--color-field-ink);
+}
+
+/* The link row scrolls sideways and would clip an outside ring */
+.link:focus-visible {
+  outline-offset: -3px;
+}
+
+.link[aria-current="page"] {
+  background: var(--color-field-2);
+  color: var(--color-accent);
+}
+
+.end {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-inline-start: auto;
+  min-width: 0;
+}
+
+.email {
+  color: var(--color-field-muted);
+  font-size: var(--text-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 16rem;
+}
+
+.offline {
+  padding: var(--space-2xs) var(--space-sm);
+  border-radius: var(--radius-control);
+  background: var(--color-error-soft);
+  color: var(--color-error);
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+
+.signOut {
+  min-height: var(--control-h);
+  padding: var(--space-2xs) var(--space-sm);
+  border: var(--rule-hair) solid var(--color-field-2);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-field-ink);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  transition: background-color var(--dur-micro) var(--ease-out);
+}
+
+.signOut:hover {
+  background: var(--color-field-2);
+}
+
+.signOut:active {
+  transform: scale(0.98);
+}
+
+@media (pointer: coarse) {
+  .link,
+  .signOut {
+    min-height: var(--tap);
+  }
+}
+
+@media (max-width: 60rem) {
+  .bar {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+  .email {
+    display: none;
+  }
+  .nav {
+    order: 3;
+    flex-basis: 100%;
+  }
+}

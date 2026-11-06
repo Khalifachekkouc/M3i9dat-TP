@@ -1,0 +1,293 @@
+{
+  "source": "https://glovoapp.com/fr/ma/meknes/stores/mayqdat-bambark-mks",
+  "fetchedAt": "2026-11-06T22:26:44.045Z",
+  "note": "Menu snapshot. Edit freely (prices on Glovo can differ from in-shop prices), then run: npm run import:glovo -- --from-json seed/products.json. 'description' and 'glovoOptions' are kept for reference and are not imported.",
+  "products": [
+    {
+      "name": "COMBO COMPLET",
+      "price": 29,
+      "category": "Combo",
+      "imageUrl": "https://glovo.dhmedia.io/image/global-menu-service/GV_MA/vendor/616633/product/32d82f11-160b-41fb-88bb-bd3794101d06.jpg",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "42304433186",
+      "description": "كومبلي+مونادا+2 معيقدات",
+      "glovoOptions": [
+        "شنو تشرب: Coca-Cola / Hawaii Tropical",
+        "بيض/بلا بيض: بلا بيض / بيض"
+      ]
+    },
+    {
+      "name": "COMBO LINCHEON",
+      "price": 25,
+      "category": "Combo",
+      "imageUrl": "https://glovo.dhmedia.io/image/global-menu-service/GV_MA/vendor/926989/product/40862126135/3870606d-4bcb-42c6-afc3-ecb39f4f456a.jpg",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "40862126135",
+      "description": "معقودة لانشون+مونادا+2 معيقدات",
+      "glovoOptions": [
+        "شنو تشرب: Coca-Cola / Hawaii Tropical",
+        "بيض/بلا بيض: بلا بيض / بيض"
+      ]
+    },
+    {
+      "name": "COMBO FROMAGE",
+      "price": 24,
+      "category": "Combo",
+      "imageUrl": "https://images.deliveryhero.io/image/global-menu-service/GV_MA/vendor/926989/product/40862126331/818dd562-f2fc-4e49-8150-a14abc790a41.jpg",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "40862126331",
+      "description": "معقودة فرماج+مونادا+2 معيقدات",
+      "glovoOptions": [
+        "شنو تشرب: Coca-Cola / Hawaii Tropical",
+        "بيض/بلا بيض: بلا بيض / بيض"
+      ]
+    },
+    {
+      "name": "COMBO NORMAL",
+      "price": 21,
+      "category": "Combo",
+      "imageUrl": "https://images.deliveryhero.io/image/global-menu-service/GV_MA/vendor/926989/product/40877264983/9c4d500f-61c4-4af6-a9e8-2a7e6ad20a54.jpg",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "40877264983",
+      "description": "معقودة عادي+مونادا+2 معيقدات",
+      "glovoOptions": [
+        "شنو تشرب: Coca-Cola / Hawaii Tropical",
+        "بيض/بلا بيض: بلا بيض / بيض"
+      ]
+    },
+    {
+      "name": "DUO COMPLET",
+      "price": 43,
+      "category": "DUO",
+      "imageUrl": "https://glovo.dhmedia.io/image/global-menu-service/GV_MA/vendor/616633/product/5f0cc299-7360-4442-9d2d-35b02ad705f9.jpg",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "42302723541",
+      "description": "كومبلي بلا بيض+كومبلي+مونادا",
+      "glovoOptions": [
+        "شنو تشرب: Coca-Cola / Hawaii Tropical"
+      ]
+    },
+    {
+      "name": "DUO LINCHEON",
+      "price": 37,
+      "category": "DUO",
+      "imageUrl": "https://glovo.dhmedia.io/image/global-menu-service/GV_MA/vendor/616633/product/82a55f09-7bf1-450c-b926-f321d2c8d94a.jpg",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "42302723538",
+      "description": "معقودة لانشون+أمليط معقودة لانشون+مونادا",
+      "glovoOptions": [
+        "شنو تشرب: Coca-Cola / Hawaii Tropical"
+      ]
+    },
+    {
+      "name": "DUO FROMAGE",
+      "price": 35,
+      "category": "DUO",
+      "imageUrl": "https://glovo.dhmedia.io/image/global-menu-service/GV_MA/vendor/616633/product/a14a5ba3-e4c0-4087-902b-c593ee6969b9.jpg",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "42302723537",
+      "description": "معقودة فرماج+أمليط معقودة فرماج+مونادا",
+      "glovoOptions": [
+        "شنو تشرب: Coca-Cola / Hawaii Tropical"
+      ]
+    },
+    {
+      "name": "DUO NORMAL",
+      "price": 30,
+      "category": "DUO",
+      "imageUrl": "https://glovo.dhmedia.io/image/global-menu-service/GV_MA/vendor/616633/product/631c9fa5-0daf-42d9-b8aa-8e01a71a2ec6.jpg",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "42302723199",
+      "description": "معقودة عادي+أمليط معقودة+مونادا",
+      "glovoOptions": [
+        "شنو تشرب: Coca-Cola / Hawaii Tropical"
+      ]
+    },
+    {
+      "name": "كومبلي",
+      "price": 19,
+      "category": "Sandwichs",
+      "imageUrl": "https://glovo.dhmedia.io/image/menus-glovo/products/28eff7a6930351245d3f044a5b645c295814746ee37daec0a8cc2318ead85184",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "40857459058",
+      "description": "معقودة+بيض+فرماج+لانشون"
+    },
+    {
+      "name": "كومبلي بلا بيض",
+      "price": 18,
+      "category": "Sandwichs",
+      "imageUrl": "https://glovo.dhmedia.io/image/global-menu-service/GV_MA/vendor/616633/PRODUCT/f979a44b-e39e-4920-bfce-a83dd0a49c89.jpg",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "41705795894",
+      "description": "معقودة فرماج لانشون"
+    },
+    {
+      "name": "أمليط معقودة لانشون",
+      "price": 17,
+      "category": "Sandwichs",
+      "imageUrl": "https://glovo.dhmedia.io/image/menus-glovo/products/857ec95ab8134e772b0564d1de6087674bfdf5c6354f8b7db1c30d8fe09a1c8a",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "40857490625",
+      "description": "معقودة+بيض+لانشون"
+    },
+    {
+      "name": "معقودة لانشون",
+      "price": 15,
+      "category": "Sandwichs",
+      "imageUrl": "https://glovo.dhmedia.io/image/global-menu-service/GV_MA/vendor/616633/product/884fb838-4f51-4b15-b018-b0daf87c283c.jpg",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "42302745323",
+      "description": "معقودة+لانشون"
+    },
+    {
+      "name": "أمليط معقودة فرماج",
+      "price": 15,
+      "category": "Sandwichs",
+      "imageUrl": "https://glovo.dhmedia.io/image/menus-glovo/products/4197d49207dbd64cd2b6f3941e671d8a79de013a058710317c0421af1a204f78",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "40712741735",
+      "description": "معقودة+بيض+فرماج"
+    },
+    {
+      "name": "معقودة فرماج",
+      "price": 14,
+      "category": "Sandwichs",
+      "imageUrl": "https://images.deliveryhero.io/image/global-menu-service/GV_MA/vendor/616633/product/9ceb2140-fec9-4403-9a88-c116d3871c4d.jpg",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "42302745322",
+      "description": "معقودة+فرماج"
+    },
+    {
+      "name": "أمليط معقودة",
+      "price": 12,
+      "category": "Sandwichs",
+      "imageUrl": "https://glovo.dhmedia.io/image/menus-glovo/products/6edf6b4f696e2aa1ebe9682d9a7bf035eecea5d8f28cf2839dbd50619e457cd0",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "40857525588",
+      "description": "معقودة+بيض"
+    },
+    {
+      "name": "معقودة عادي",
+      "price": 10,
+      "category": "Sandwichs",
+      "imageUrl": "https://glovo.dhmedia.io/image/global-menu-service/GV_MA/vendor/616633/PRODUCT/98339b3f-c395-4d4b-a954-a9719c416e1a.png",
+      "available": true,
+      "sauceOptions": [
+        "Tomate",
+        "Piquante"
+      ],
+      "sourceId": "41197232440",
+      "description": "Le vrai"
+    },
+    {
+      "name": "معيقدات",
+      "price": 2,
+      "category": "M3i9date/معيقدات",
+      "imageUrl": "https://glovo.dhmedia.io/image/menus-glovo/products/8ff108ccced73380eecb1484038fb509fb855f06ae65046de7ac43f228aa40a7",
+      "available": true,
+      "sauceOptions": [],
+      "sourceId": "40876910003",
+      "description": "ماشي معقودة لي كاتعرف "
+    },
+    {
+      "name": "Pulpy orange",
+      "price": 9,
+      "category": "Boissons",
+      "imageUrl": "https://images.deliveryhero.io/image/global-menu-service/GV_MA/vendor/616633/PRODUCT/f8861a1f-4f42-4913-8ae4-e2d86d47e402.png",
+      "available": true,
+      "sauceOptions": [],
+      "sourceId": "41333703445",
+      "description": "Pulpy"
+    },
+    {
+      "name": "Coca-Cola",
+      "price": 7,
+      "category": "Boissons",
+      "imageUrl": "https://images.deliveryhero.io/image/global-menu-service/GV_MA/vendor/926989/product/40713631524/29968bc9-604a-4397-8854-0795ad483002.jpg",
+      "available": true,
+      "sauceOptions": [],
+      "sourceId": "40713631524",
+      "description": "Fraîche"
+    },
+    {
+      "name": "Hawaii Tropical",
+      "price": 7,
+      "category": "Boissons",
+      "imageUrl": "https://images.deliveryhero.io/image/global-menu-service/GV_MA/vendor/616633/product/40713821960/459215f6-66d9-444d-9653-e797facd0ad9.jpg",
+      "available": true,
+      "sauceOptions": [],
+      "sourceId": "40713821960",
+      "description": "Fraîche"
+    },
+    {
+      "name": "Eau Minérale",
+      "price": 5,
+      "category": "Boissons",
+      "imageUrl": "",
+      "available": true,
+      "sauceOptions": [],
+      "sourceId": "40857540235",
+      "description": "Fraîche"
+    }
+  ]
+}

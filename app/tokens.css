@@ -1,0 +1,80 @@
+/* Hallmark · tokens for app/globals.css, which carries the stamp */
+:root {
+  /* Spacing */
+  --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px; --space-2xl: 64px; --space-3xl: 96px;
+
+  /* Type scale: 1.2 ratio from a 16px body; display sizes for the order number, which is the signature */
+  --text-xs: 0.8125rem; --text-sm: 0.875rem; --text-md: 1rem; --text-lg: 1.2rem; --text-xl: 1.44rem; --text-2xl: 1.728rem; --text-3xl: 2.074rem;
+  --text-display-s: 2.5rem; --text-display: 3.583rem; --text-display-xl: 6rem;
+  --tracking-display: -0.01em;
+
+  /* Motion: state only */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-micro: 120ms; --dur-short: 220ms;
+
+  /* Layout */
+  --container: 1440px; --gutter: 24px; --topbar-height: 60px; --cart-width: 400px;
+  --control-h: 40px; --tap: 48px;
+  --z-base: 1; --z-raised: 10; --z-sticky: 200; --z-sticky-nav: 300; --z-modal: 400; --z-toast: 500;
+
+  /* Colour, light (cashier, admin). Anchor hue: street-food orange, ~48 */
+  --color-paper: oklch(97.4% 0.012 75);
+  --color-paper-2: oklch(94.2% 0.018 70);
+  --color-paper-3: oklch(90.5% 0.024 68);
+  --color-surface: oklch(99% 0.006 75);
+  --color-ink: oklch(21% 0.025 45);
+  --color-ink-2: oklch(33% 0.03 45);
+  --color-muted: oklch(47% 0.03 50);
+  --color-rule: oklch(85% 0.025 60);
+  --color-rule-strong: oklch(70% 0.03 55);
+  /* Field and control edges: 3:1 or better on every light surface */
+  --color-edge: oklch(60% 0.03 55);
+
+  --color-accent: oklch(67% 0.172 48);
+  --color-accent-strong: oklch(61% 0.17 43);
+  --color-accent-ink: oklch(19% 0.03 45);
+  --color-accent-soft: oklch(93% 0.045 65);
+  --color-accent-text: oklch(52% 0.148 42);
+  --color-focus: oklch(63% 0.18 44);
+
+  /* The top bar: espresso field, the orange wordmark on it */
+  --color-field: oklch(24% 0.03 45);
+  --color-field-2: oklch(31% 0.032 45);
+  --color-field-ink: oklch(95% 0.015 75);
+  --color-field-muted: oklch(80% 0.02 70);
+
+  --color-error: oklch(52% 0.19 27);
+  --color-error-soft: oklch(94% 0.03 27);
+  --color-success: oklch(50% 0.12 150);
+  --color-success-soft: oklch(94% 0.035 150);
+  --color-overlay: oklch(21% 0.025 45 / 0.45);
+
+  /* Faces: Antonio (condensed, the order number and heads), Figtree (everything else) */
+  --font-display: var(--font-antonio), "Antonio", "Arial Narrow", ui-sans-serif, sans-serif;
+  --font-body: var(--font-figtree), "Figtree", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-control: 10px; --radius-card: 14px; --radius-pill: 999px;
+  --rule-hair: 1px; --rule-strong: 2px;
+  --shadow-card: 0 1px 2px oklch(21% 0.025 45 / 0.08);
+  --shadow-raised: 0 8px 24px oklch(21% 0.025 45 / 0.16);
+}
+
+/* Kitchen screen: dark, read from across the room. Same names, kitchen values. */
+[data-theme="kitchen"] {
+  --color-paper: oklch(16% 0.014 50);
+  --color-paper-2: oklch(21.5% 0.018 50);
+  --color-paper-3: oklch(30% 0.02 50);
+  --color-surface: oklch(21.5% 0.018 50);
+  --color-ink: oklch(95% 0.013 75);
+  --color-ink-2: oklch(88% 0.015 72);
+  --color-muted: oklch(78% 0.02 70);
+  --color-rule: oklch(34% 0.02 50);
+  --color-edge: oklch(55% 0.02 55);
+  --color-overlay-kitchen: oklch(16% 0.014 50 / 0.82);
+  --color-accent: oklch(72% 0.165 52);
+  --color-accent-ink: oklch(16% 0.014 50);
+  --color-focus: oklch(72% 0.18 52);
+  --color-urgent: oklch(66% 0.19 30);
+  --color-error: oklch(66% 0.19 30);
+  --color-error-soft: oklch(26% 0.05 30);
+}

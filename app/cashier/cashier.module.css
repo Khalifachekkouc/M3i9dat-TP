@@ -1,0 +1,433 @@
+/* Hallmark · module of app/globals.css (stamp, tokens, focus ring, reduced motion) · posture: committed · screen: caisse, a grid of product tiles beside the cart, sauces chosen per line */
+/* Hallmark · waive 39b · each product tile is one button holding photo, name and price · the caisse is tapped by finger on a tablet, so each product tile stays a large target, not a 40px control */
+.shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--cart-width);
+  min-height: 0;
+}
+
+/* ---------- Menu ---------- */
+.menu {
+  container-type: inline-size;
+  display: grid;
+  align-content: start;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--gutter) var(--space-2xl);
+  min-width: 0;
+}
+
+.categories {
+  position: sticky;
+  top: var(--topbar-height);
+  z-index: var(--z-sticky);
+  display: flex;
+  gap: var(--space-xs);
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-inline: calc(var(--gutter) * -1);
+  padding: var(--space-xs) var(--gutter);
+  background: var(--color-paper);
+}
+
+.categories :global(.chip) {
+  flex: none;
+  min-height: var(--tap);
+  font-size: var(--text-lg);
+}
+
+.grid {
+  --cols: 2;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+@container (min-width: 34rem) { .grid { --cols: 3; } }
+@container (min-width: 48rem) { .grid { --cols: 4; } }
+@container (min-width: 64rem) { .grid { --cols: 5; } }
+
+.tile {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: 100%;
+  height: 100%;
+  padding: 0 0 var(--space-sm);
+  border: var(--rule-strong) solid var(--color-rule);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  text-align: start;
+  overflow: hidden;
+  touch-action: manipulation;
+  transition: border-color var(--dur-micro) var(--ease-out), transform var(--dur-micro) var(--ease-out);
+}
+
+.tile:hover {
+  border-color: var(--color-accent);
+}
+
+.tile:active {
+  transform: scale(0.97);
+}
+
+.tile:focus-visible {
+  outline-offset: 3px;
+}
+
+.tile:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.tile:disabled:hover {
+  border-color: var(--color-rule);
+}
+
+.tileImage {
+  display: block;
+  aspect-ratio: 4 / 3;
+  background: var(--color-paper-3);
+  overflow: hidden;
+}
+
+.tileImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* No photo: the name, set big on the espresso field, like the board above the counter */
+.tileNoImage {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: var(--space-sm);
+  background: var(--color-field);
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-2xl);
+  line-height: 1;
+  text-align: center;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.tileName {
+  padding: var(--space-xs) var(--space-sm) 0;
+  font-weight: 700;
+  font-size: var(--text-lg);
+  line-height: 1.2;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.tilePrice {
+  padding: var(--space-2xs) var(--space-sm) 0;
+  color: var(--color-accent-text);
+  font-weight: 700;
+  font-size: var(--text-lg);
+}
+
+.tileSkeleton {
+  aspect-ratio: 4 / 4.2;
+}
+
+.emptyMenu {
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-xl) var(--space-lg);
+  border: var(--rule-strong) dashed var(--color-rule);
+  border-radius: var(--radius-card);
+}
+
+.emptyTitle {
+  font-size: var(--text-3xl);
+}
+
+/* ---------- Cart ---------- */
+.cart {
+  position: sticky;
+  top: var(--topbar-height);
+  height: calc(100dvh - var(--topbar-height));
+  display: flex;
+  flex-direction: column;
+  border-inline-start: var(--rule-hair) solid var(--color-rule);
+  background: var(--color-surface);
+  min-width: 0;
+}
+
+.cartHead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-md) var(--space-sm);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+}
+
+.cartTitle {
+  font-size: var(--text-2xl);
+}
+
+.cartCount {
+  color: var(--color-muted);
+  font-weight: 700;
+}
+
+.cartClose {
+  display: none;
+  margin-inline-start: auto;
+}
+
+.cartEmpty {
+  padding: var(--space-xl) var(--space-md);
+  color: var(--color-muted);
+  font-size: var(--text-lg);
+}
+
+.lines {
+  flex: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.line {
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+  transition: background-color var(--dur-short) var(--ease-out);
+}
+
+.line[data-pending] {
+  background: var(--color-accent-soft);
+}
+
+.lineHead {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--space-xs);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.lineName {
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.lineQty,
+.linePrice {
+  white-space: nowrap;
+}
+
+.sauces {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.pendingHint {
+  color: var(--color-accent-text);
+  font-weight: 700;
+}
+
+.lineActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.stepper {
+  display: flex;
+  gap: var(--space-2xs);
+}
+
+.remove {
+  margin-inline-start: auto;
+  color: var(--color-error);
+}
+
+.noteText {
+  font-style: italic;
+  color: var(--color-ink-2);
+}
+
+.cartFoot {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-top: var(--rule-strong) solid var(--color-ink);
+  background: var(--color-surface);
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-display-s);
+  line-height: 1;
+}
+
+.pendingNote {
+  color: var(--color-accent-text);
+  font-weight: 700;
+}
+
+.validate {
+  width: 100%;
+  min-height: 64px;
+  font-size: var(--text-xl);
+}
+
+.clearConfirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+  font-weight: 700;
+}
+
+/* ---------- The validated order: its number, as it is called at the counter ---------- */
+.success {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: var(--space-xl) var(--space-lg);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.successLabel {
+  font-weight: 700;
+  font-size: var(--text-xl);
+}
+
+.successNumber {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(6rem, 14vw, 10rem);
+  line-height: 0.9;
+  letter-spacing: var(--tracking-display);
+}
+
+.successText {
+  font-weight: 700;
+}
+
+.successWarning {
+  padding: var(--space-xs) var(--space-sm);
+  border: var(--rule-strong) solid var(--color-accent-ink);
+  border-radius: var(--radius-control);
+  font-weight: 700;
+}
+
+.successTotal {
+  font-weight: 700;
+  font-size: var(--text-2xl);
+}
+
+.successActions {
+  display: grid;
+  gap: var(--space-xs);
+  padding-top: var(--space-md);
+}
+
+.successActions :global(.btn-ghost) {
+  color: var(--color-accent-ink);
+  border-color: var(--color-accent-ink);
+}
+
+.successActions :global(.btn-ghost):hover {
+  background: var(--color-accent-strong);
+}
+
+/* ---------- Phone width: the cart becomes a sheet ---------- */
+.cartBar {
+  display: none;
+}
+
+@media (max-width: 60rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .menu {
+    padding-bottom: calc(var(--space-3xl) + var(--space-xl));
+  }
+
+  .cart {
+    position: fixed;
+    inset: var(--topbar-height) 0 0 0;
+    z-index: var(--z-modal);
+    height: auto;
+    border-inline-start: none;
+    transition: transform var(--dur-short) var(--ease-out), visibility 0s;
+  }
+
+  /* The sheet is open unless the script says it is closed */
+  .cart[data-sheet="closed"] {
+    transform: translateY(100%);
+    visibility: hidden;
+    transition: transform var(--dur-short) var(--ease-out), visibility 0s linear var(--dur-short);
+  }
+
+  .cartClose {
+    display: inline-flex;
+  }
+
+  .cartBar {
+    display: block;
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: var(--z-sticky);
+    padding: var(--space-sm) var(--gutter) calc(var(--space-sm) + env(safe-area-inset-bottom, 0px));
+    background: var(--color-paper);
+    border-top: var(--rule-hair) solid var(--color-rule);
+  }
+
+  .cartBar :global(.btn) {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    white-space: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile,
+  .cart,
+  .line {
+    transition: none;
+  }
+  .tile:active {
+    transform: none;
+  }
+}
+
+@media (max-width: 40rem) {
+  .successNumber {
+    font-size: 6rem;
+  }
+}

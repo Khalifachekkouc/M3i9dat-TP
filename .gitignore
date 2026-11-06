@@ -32,6 +32,19 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# Firebase service-account keys (never commit: full admin access) and local tooling
+*firebase-adminsdk*.json
+*service-account*.json
+*service_account*.json
+*serviceAccount*.json
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Hallmark render output
+.hallmark/shots/
 
 # vercel
 .vercel

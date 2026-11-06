@@ -1,0 +1,32 @@
+rules_version = '2';
+
+// Product images only. Reads need a staff role, writes need the admin role
+// (read from Firestore users/{uid}.role, the same source as firestore.rules).
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAdmin() {
+      return request.auth != null
+        && firestore.exists(/databases/(default)/documents/users/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isStaff() {
+      return request.auth != null
+        && firestore.exists(/databases/(default)/documents/users/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role in ['admin', 'cashier', 'kitchen'];
+    }
+
+    // The app shows images through download URLs (token links), which do not
+    // go through these rules; this read rule covers direct SDK reads only.
+    match /products/{productId}/{fileName} {
+      allow read: if isStaff();
+      allow create, update: if isAdmin()
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow delete: if isAdmin();
+    }
+
+    // Everything else is closed.
+  }
+}

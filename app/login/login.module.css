@@ -1,0 +1,85 @@
+/* Hallmark · module of app/globals.css (stamp, tokens, focus ring, reduced motion) · posture: committed */
+/* Hallmark · dismissed 23 · the orange shop name on the espresso field is the shop sign itself, the committed posture of the stamp, and it is the only accent on the screen */
+/* Hallmark · waive 23 · posture committed, the only orange on the page is the name M3i9dat Ba Mbarek · l'enseigne orange de M3i9dat Ba Mbarek est la marque de la boutique, la connexion reste neutre */
+.page {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+}
+
+/* The sign in the window: the shop's name, huge, in orange on espresso */
+.brand {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  padding: var(--space-2xl) var(--space-xl);
+  background: var(--color-field);
+  color: var(--color-field-ink);
+}
+
+.wordmark {
+  text-wrap: balance;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(4rem, 9vw, 8.5rem);
+  line-height: 0.95;
+  letter-spacing: var(--tracking-display);
+  color: var(--color-accent);
+  overflow-wrap: break-word;
+  min-width: 0;
+  max-width: 9ch;
+}
+
+.city {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-field-muted);
+}
+
+.formSide {
+  display: grid;
+  place-items: center;
+  padding: var(--space-xl) var(--gutter);
+}
+
+.form {
+  display: grid;
+  gap: var(--space-md);
+  width: min(100%, 24rem);
+}
+
+.title {
+  font-size: var(--text-display-s);
+}
+
+.form :focus-visible {
+  outline-offset: 3px;
+}
+
+.form button:active {
+  transform: scale(0.98);
+}
+
+.form button:disabled {
+  cursor: not-allowed;
+}
+
+.lead {
+  color: var(--color-muted);
+  margin-block-end: var(--space-xs);
+}
+
+@media (max-width: 60rem) {
+  .page {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+  .brand {
+    padding: var(--space-xl) var(--gutter);
+  }
+  .wordmark {
+    font-size: clamp(3rem, 14vw, 5rem);
+    max-width: none;
+  }
+}
