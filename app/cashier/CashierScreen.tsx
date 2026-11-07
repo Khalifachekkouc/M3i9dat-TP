@@ -7,7 +7,8 @@ import { cartCount, cartReducer, loadCart, needsSauce, saveCart, toOrderItems } 
 import { errorMessage, useKitchenSettings, useOnline, useProducts, useSauces } from "@/lib/data";
 import { DEFAULT_PREP_SEC } from "@/lib/kitchen-settings";
 import { formatMAD, t } from "@/lib/i18n";
-import { clearPendingOrderId, pendingOrderId } from "@/lib/order-core";
+import { cashierLogoutWarning } from "@/lib/logout";
+import { clearPendingOrderId, pendingOrderId, readPendingOrderId } from "@/lib/order-core";
 import { newOrderId, orderTotal, placeOrder, type PlacedOrder } from "@/lib/orders";
 import { PreviewContext } from "@/lib/preview-context";
 import type { Product, Role } from "@/lib/types";
@@ -61,6 +62,8 @@ export function CashierScreen({ uid, email, role }: Props) {
   const items = toOrderItems(lines);
   const total = orderTotal(items);
   const pendingSauces = lines.filter(needsSauce).length;
+  // Read at each render: a failed validation leaves the id and re-renders with its error.
+  const logoutWarning = cashierLogoutWarning(cartCount(lines), readPendingOrderId(localStorage) !== null);
 
   function add(p: Product) {
     setSaveError(null);
@@ -100,7 +103,7 @@ export function CashierScreen({ uid, email, role }: Props) {
 
   return (
     <div className={styles.shell}>
-      <TopBar role={role} email={email} />
+      <TopBar role={role} email={email} logoutWarning={logoutWarning} />
 
       <main className={styles.layout}>
         <section className={styles.menu} aria-labelledby="menu-heading">

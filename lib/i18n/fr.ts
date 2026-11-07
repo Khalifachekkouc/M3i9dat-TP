@@ -17,13 +17,25 @@ export const fr = {
     edit: "Modifier",
     add: "Ajouter",
     close: "Fermer",
-    signOut: "Se déconnecter",
     offline: "Hors ligne. Les données affichées peuvent dater.",
     backOnline: "Connexion rétablie.",
     unknownError: "Une erreur est survenue.",
     permissionDenied: "Accès refusé par les règles de sécurité. Vérifiez le rôle du compte.",
     yes: "Oui",
     no: "Non",
+  },
+
+  logout: {
+    label: "Déconnexion",
+    confirm: "Confirmer",
+    busy: "Déconnexion…",
+    confirmHint: (seconds: number) => `Touchez « Confirmer » dans les ${seconds} secondes pour vous déconnecter.`,
+    /** Cashier: a validation was sent but never confirmed. */
+    pendingKept:
+      "La dernière validation n'a pas été confirmée. Le panier reste sur cette caisse : validez-le de nouveau après la connexion, sans risque de doublon.",
+    /** Cashier: a cart in progress. */
+    cartKept: (n: number) =>
+      `Panier en cours (${n} article${n > 1 ? "s" : ""}) : il reste sur cette caisse pour la prochaine connexion.`,
   },
 
   roles: {

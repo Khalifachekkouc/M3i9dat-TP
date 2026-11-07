@@ -78,6 +78,7 @@ If the page ever blocks the script or changes shape, it stops without importing 
   - **kiosk option** (nothing to tap, ever): start Chrome with `--autoplay-policy=no-user-gesture-required`, ideally with `--kiosk`, e.g. `chrome.exe --kiosk --autoplay-policy=no-user-gesture-required https://<your-site>/kitchen`. Audio is then allowed at load and neither the start screen nor the indicator appear.
 
   The orange flash on new orders works in every case. The screen also asks the browser to stay awake (Wake Lock).
+- **Logging out.** « Déconnexion » sits in the top bar (cashier, admin) and in the kitchen header: one tap turns it into « Confirmer » for 3 seconds (6 when there is a warning), a second tap logs out, so a stray tap does nothing. In order, it unmounts the screens (their Firestore listeners close while still signed in), stops the profile listener, signs out and goes to /login; then the whole app tree is mounted again, so no state of the previous account survives (Next.js otherwise keeps the pages you leave alive but hidden, which is why the login form used to stay stuck on « Connexion… » until a refresh). On the next sign-in the ID token is refreshed and the role is read from the server, not the local cache, and each account lands on its own station. The cashier's cart and pending order id stay on the device; if either exists, « Confirmer » comes with a warning that says so.
 
 ## Commands
 
@@ -87,6 +88,7 @@ If the page ever blocks the script or changes shape, it stops without importing 
 | `npm test` | Unit tests (cart and sauce rules, order retries without duplicates, zones and auto completion, prep-time snapshot and settings, new-order detection, tickets and day rollover) |
 | `npm run seed:settings` | Creates `settings/kitchen` (300 s) and `settings/sauces` if missing |
 | `npm run typecheck`, `npm run lint` | TypeScript, ESLint |
+| `npm run test:e2e` | Browser test of logout and account switching without a refresh (cashier → kitchen → admin → cashier): login form usable after each logout, no `permission-denied` in the console, each station loads, the cart survives logout. Needs `npm run dev` running, Chrome (`CHROME_PATH` if not in the default place) and the same `SMOKE_*` variables as the smoke test. Leaves no data behind |
 | `npm run smoke-test` | Checks the **deployed** rules on the live project, role by role (needs `SMOKE_ADMIN_EMAIL`, `SMOKE_ADMIN_PASSWORD`, and the same for `CASHIER` and `KITCHEN`, as environment variables only). Covers « Terminé » (kitchen only, completion fields only), prep-time bounds and the snapshot. Creates test orders and deletes them, puts today's counter and `settings/kitchen` back as they were |
 
 ## Without Firebase Storage (current setup)

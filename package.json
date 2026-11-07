@@ -12,7 +12,8 @@
     "import:glovo": "tsx scripts/import-glovo.ts",
     "test": "tsx --test lib/*.test.ts",
     "smoke-test": "tsx scripts/smoke-test.ts",
-    "seed:settings": "tsx scripts/seed-settings.ts"
+    "seed:settings": "tsx scripts/seed-settings.ts",
+    "test:e2e": "node e2e/auth-flow.mjs"
   },
   "dependencies": {
     "firebase": "^12.19.0",
@@ -29,6 +30,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "firebase-admin": "^14.5.0",
+    "puppeteer-core": "^24.10.0",
     "tsx": "^4.23.15",
     "typescript": "^5"
   }

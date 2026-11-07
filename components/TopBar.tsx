@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { signOut } from "@/lib/auth-context";
 import { useOnline } from "@/lib/data";
 import { t } from "@/lib/i18n";
 import type { Role } from "@/lib/types";
+import { LogoutButton } from "./LogoutButton";
 import styles from "./TopBar.module.css";
 
 const STATIONS: { href: string; label: string; roles: Role[] }[] = [
@@ -20,9 +20,11 @@ interface Props {
   email?: string | null;
   /** Extra controls for the current station, placed before the account block. */
   children?: ReactNode;
+  /** Shown with « Confirmer » before logging out (the cashier's cart in progress). */
+  logoutWarning?: string | null;
 }
 
-export function TopBar({ role, email, children }: Props) {
+export function TopBar({ role, email, children, logoutWarning = null }: Props) {
   const pathname = usePathname();
   const online = useOnline();
   const stations = STATIONS.filter((s) => s.roles.includes(role));
@@ -56,9 +58,7 @@ export function TopBar({ role, email, children }: Props) {
           </span>
         )}
         {email && <span className={styles.email}>{email}</span>}
-        <button type="button" className={styles.signOut} onClick={() => signOut()}>
-          {t.common.signOut}
-        </button>
+        <LogoutButton variant="field" warning={logoutWarning} />
       </div>
     </header>
   );

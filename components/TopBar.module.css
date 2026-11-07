@@ -86,30 +86,8 @@
   font-size: var(--text-sm);
 }
 
-.signOut {
-  min-height: var(--control-h);
-  padding: var(--space-2xs) var(--space-sm);
-  border: var(--rule-hair) solid var(--color-field-2);
-  border-radius: var(--radius-control);
-  background: transparent;
-  color: var(--color-field-ink);
-  font-weight: 700;
-  font-size: var(--text-sm);
-  white-space: nowrap;
-  transition: background-color var(--dur-micro) var(--ease-out);
-}
-
-.signOut:hover {
-  background: var(--color-field-2);
-}
-
-.signOut:active {
-  transform: scale(0.98);
-}
-
 @media (pointer: coarse) {
-  .link,
-  .signOut {
+  .link {
     min-height: var(--tap);
   }
 }

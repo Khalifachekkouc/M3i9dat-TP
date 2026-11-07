@@ -1,0 +1,61 @@
+/* « Déconnexion »: small, but a full 48px touch target on every screen. */
+.wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+.button {
+  min-height: var(--tap);
+  padding: var(--space-2xs) var(--space-md);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+/* On the dark top bar */
+.field {
+  border: var(--rule-hair) solid var(--color-field-2);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-field-ink);
+  font-weight: 700;
+  transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+}
+
+.field:hover {
+  background: var(--color-field-2);
+}
+
+.field:active {
+  transform: scale(0.98);
+}
+
+/* Second step: the same button, now the one that logs out */
+.button[data-step="confirm"] {
+  border-color: var(--color-error);
+  background: var(--color-error-soft);
+  color: var(--color-error);
+}
+
+.button:disabled {
+  cursor: progress;
+}
+
+.warning {
+  max-width: 24rem;
+  padding: var(--space-2xs) var(--space-sm);
+  border-radius: var(--radius-control);
+  background: var(--color-error-soft);
+  color: var(--color-error);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  line-height: 1.3;
+}
+
+@media (max-width: 40rem) {
+  .wrap {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}

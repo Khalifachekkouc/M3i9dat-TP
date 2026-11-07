@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { HOME_BY_ROLE, signOut, useAuth } from "@/lib/auth-context";
+import { HOME_BY_ROLE, useAuth } from "@/lib/auth-context";
+import { LogoutButton } from "./LogoutButton";
 import { t } from "@/lib/i18n";
 import type { Role, UserProfile } from "@/lib/types";
 import type { User } from "firebase/auth";
@@ -12,11 +13,9 @@ import styles from "./RoleGate.module.css";
 interface Props {
   allow: readonly Role[];
   children: (session: { user: User; profile: UserProfile }) => ReactNode;
-  /** The kitchen screen must not show buttons, even on its error states. */
-  noControls?: boolean;
 }
 
-export function RoleGate({ allow, children, noControls = false }: Props) {
+export function RoleGate({ allow, children }: Props) {
   const state = useAuth();
   const router = useRouter();
 
@@ -24,7 +23,7 @@ export function RoleGate({ allow, children, noControls = false }: Props) {
     if (state.status === "signedOut") router.replace("/login");
   }, [state.status, router]);
 
-  if (state.status === "loading" || state.status === "signedOut") {
+  if (state.status === "loading" || state.status === "signingOut" || state.status === "signedOut") {
     return (
       <div className={styles.center} role="status" aria-live="polite">
         <p className={styles.muted}>{t.common.loading}</p>
@@ -39,11 +38,9 @@ export function RoleGate({ allow, children, noControls = false }: Props) {
           <h1 className={styles.title}>{t.auth.noRoleTitle}</h1>
           <p>{state.status === "noRole" ? t.auth.noRole : `${t.auth.profileError} ${state.message}`}</p>
           <p className={styles.muted}>{state.user.email}</p>
-          {!noControls && (
-            <button type="button" className="btn" onClick={() => signOut()}>
-              {t.common.signOut}
-            </button>
-          )}
+          <div className={styles.actions}>
+            <LogoutButton />
+          </div>
         </div>
       </div>
     );
@@ -56,16 +53,12 @@ export function RoleGate({ allow, children, noControls = false }: Props) {
         <div className={styles.panel}>
           <h1 className={styles.title}>{t.auth.forbiddenTitle}</h1>
           <p>{t.auth.forbidden(t.roles[role])}</p>
-          {!noControls && (
-            <div className={styles.actions}>
-              <Link className="btn btn-primary" href={HOME_BY_ROLE[role]}>
-                {t.auth.goToMyStation}
-              </Link>
-              <button type="button" className="btn" onClick={() => signOut()}>
-                {t.common.signOut}
-              </button>
-            </div>
-          )}
+          <div className={styles.actions}>
+            <Link className="btn btn-primary" href={HOME_BY_ROLE[role]}>
+              {t.auth.goToMyStation}
+            </Link>
+            <LogoutButton />
+          </div>
         </div>
       </div>
     );

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { collection, doc, onSnapshot, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { LogoutButton } from "@/components/LogoutButton";
 import { errorMessage, toOrder, useOnline } from "@/lib/data";
 import { dayKey, formatTime, t } from "@/lib/i18n";
 import { cardTiming, detectArrivals, prepMsOf, previousDay, splitZones } from "@/lib/kitchen";
@@ -207,6 +208,7 @@ export function KitchenBoard({
           </p>
         )}
         <p className={`${styles.clock} num`}>{formatTime(new Date(serverNow))}</p>
+        <LogoutButton />
       </header>
 
       {(!online || listError || !synced) && (
