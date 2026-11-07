@@ -1,5 +1,3 @@
-/* Hallmark · module of app/globals.css (stamp, tokens, focus ring, reduced motion) · posture: committed · tickets: an 80mm receipt card for the customer, an orange-bannered card for the shop */
-/* Hallmark · dismissed 23 · the orange TICKET MAGASIN banner is 80mm wide inside one ticket card, asked for by the brief as the inverted banner that tells the shop ticket apart, not a viewport-scale fill */
 /* Both cards are exactly 80mm wide on screen; the PDF is a capture of the same element, so they match. */
 
 .ticket {

@@ -43,8 +43,13 @@ yarn-error.log*
 firebase-debug.log
 firestore-debug.log
 
-# Hallmark render output
-.hallmark/shots/
+# Local editor and assistant tooling: stays on this machine, never tracked
+.claude/
+.hallmark/
+.agents/
+skills/
+AGENTS.md
+CLAUDE.md
 
 # vercel
 .vercel

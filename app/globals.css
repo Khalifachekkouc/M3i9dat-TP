@@ -1,9 +1,3 @@
-/* Hallmark · shape: app screen · genre: playful · theme: custom · idea: "the order number called across the counter runs every screen" · vibe: "loud orange street counter, fast hands, big numbers"
- * paper: oklch(97.4% 0.012 75) · accent: oklch(67% 0.172 48) · display: Antonio · body: Figtree
- * nav: espresso top bar, orange wordmark, role links · signature: the order number, set huge on the validated ticket and on every kitchen card · states: loading, empty, error, offline, full
- * axes: light/display-condensed/chromatic-orange (kitchen: dark/display-condensed/chromatic-orange) · posture: committed (espresso bar and orange signal) · contrast: pass · v2.0.0 */
-/* Hallmark · pre-emit critique: P4 H5 E4 S4 R4 V4 · weakest: E, the kitchen sound cannot play without a gesture in a default browser; documented the kiosk flag and kept the visual flash as the guaranteed signal */
-/* Hallmark · dismissed F4 · the extra fills are selected states (aria-pressed chips and toggles), not actions; each screen has one filled action, Valider, Enregistrer or Ajouter */
 @import url("./tokens.css");
 @import url("./base.css");
 

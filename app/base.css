@@ -1,4 +1,3 @@
-/* Hallmark · base rules for app/globals.css, which carries the stamp */
 *, *::before, *::after { box-sizing: border-box; }
 html, body { overflow-x: clip; }
 html { scrollbar-color: var(--color-muted) var(--color-paper); -webkit-text-size-adjust: 100%; }

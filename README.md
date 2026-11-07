@@ -2,6 +2,8 @@
 
 Real-time ordering for the snack shop in Meknès: a touch cashier that shows two 80mm tickets (downloadable as PDF), a touch kitchen screen with « En préparation » and « Terminées » zones, and an admin back office. Next.js 16 (App Router) + Firebase (Auth, Firestore, Storage). Prices in MAD, UI in French (all strings in `lib/i18n/fr.ts`).
 
+**Stack:** Next.js 16 (App Router), React 19, TypeScript, Firebase (Auth, Firestore).
+
 ## Routes
 
 | Route | Who | What |

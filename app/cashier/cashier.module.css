@@ -1,5 +1,3 @@
-/* Hallmark · module of app/globals.css (stamp, tokens, focus ring, reduced motion) · posture: committed · screen: caisse, a grid of product tiles beside the cart, sauces chosen per line */
-/* Hallmark · waive 39b · each product tile is one button holding photo, name and price · the caisse is tapped by finger on a tablet, so each product tile stays a large target, not a 40px control */
 .shell {
   min-height: 100dvh;
   display: flex;
