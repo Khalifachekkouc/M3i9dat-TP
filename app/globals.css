@@ -122,12 +122,3 @@
 .banner[data-tone="success"] { color: var(--color-success); background: var(--color-success-soft); }
 .banner[data-tone="info"] { color: var(--color-ink-2); background: var(--color-paper-2); border-color: var(--color-rule); }
 .banner > span { flex: 1 1 16rem; min-width: 0; }
-
-/* ---------- Print: hidden on screen, the tickets own the paper ---------- */
-.print-only { display: none; }
-@page { size: 80mm auto; margin: 0; }
-@media print {
-  html, body { background: none; }
-  .screen-only { display: none !important; }
-  .print-only { display: block; }
-}

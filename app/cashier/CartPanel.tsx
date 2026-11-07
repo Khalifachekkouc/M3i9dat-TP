@@ -3,7 +3,6 @@
 import { useState, type Dispatch } from "react";
 import { cartCount, needsSauce, type CartAction, type CartLine } from "@/lib/cart";
 import { formatMAD, t } from "@/lib/i18n";
-import type { PlacedOrder } from "@/lib/orders";
 import styles from "./cashier.module.css";
 
 const tc = t.cashier;
@@ -15,13 +14,10 @@ interface Props {
   pendingSauces: number;
   saving: boolean;
   saveError: string | null;
-  lastOrder: PlacedOrder | null;
   open: boolean;
   onToggle: () => void;
   onValidate: () => void;
   onClear: () => void;
-  onReprint: () => void;
-  onNewOrder: () => void;
 }
 
 export function CartPanel({
@@ -31,16 +27,12 @@ export function CartPanel({
   pendingSauces,
   saving,
   saveError,
-  lastOrder,
   open,
   onToggle,
   onValidate,
   onClear,
-  onReprint,
-  onNewOrder,
 }: Props) {
   const [confirmClear, setConfirmClear] = useState(false);
-  const showSuccess = lines.length === 0 && lastOrder !== null;
 
   return (
     <aside className={styles.cart} data-sheet={open ? "open" : "closed"} aria-labelledby="cart-heading">
@@ -56,27 +48,7 @@ export function CartPanel({
         </button>
       </div>
 
-      {showSuccess ? (
-        <div className={styles.success} role="status">
-          <p className={styles.successLabel}>{tc.savedLabel}</p>
-          <p className={`${styles.successNumber} num`}>{lastOrder.number}</p>
-          <p className={styles.successText}>{lastOrder.alreadySaved ? tc.alreadySaved : tc.saved}</p>
-          {lastOrder.differs && (
-            <p className={styles.successWarning} role="alert">
-              {tc.alreadySavedDiffers}
-            </p>
-          )}
-          <p className={`${styles.successTotal} num`}>{formatMAD(lastOrder.total)}</p>
-          <div className={styles.successActions}>
-            <button type="button" className="btn btn-lg" onClick={onReprint}>
-              {tc.reprint}
-            </button>
-            <button type="button" className="btn btn-ghost btn-lg" onClick={onNewOrder}>
-              {tc.newOrder}
-            </button>
-          </div>
-        </div>
-      ) : lines.length === 0 ? (
+      {lines.length === 0 ? (
         <p className={styles.cartEmpty}>{tc.cartEmpty}</p>
       ) : (
         <ol className={styles.lines}>

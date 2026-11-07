@@ -91,29 +91,32 @@ export const fr = {
     clearConfirm: "Vider la commande ?",
     saveError: "La commande n'a pas été enregistrée. Le panier est conservé : vérifiez la connexion puis validez à nouveau.",
     offlineSave: "Hors ligne : la commande ne peut pas être numérotée sans connexion. Le panier est conservé.",
-    savedLabel: "Commande",
     retrySafe: "Vous pouvez revalider : la même commande ne sera jamais enregistrée deux fois.",
-    alreadySaved: "Cette commande avait déjà été enregistrée avant la coupure. Impression des deux tickets…",
+    alreadySaved: "Cette commande avait déjà été enregistrée avant la coupure : voici ses tickets.",
     alreadySavedDiffers:
       "Attention : le panier a été modifié après l'enregistrement. Les tickets reprennent la commande enregistrée, celle que voit la cuisine. Vérifiez avec le client.",
-    saved: "Enregistrée. Impression des deux tickets…",
-    reprint: "Réimprimer les tickets",
-    newOrder: "Nouvelle commande",
     cartLabel: "Panier",
     showCart: "Voir la commande",
   },
 
   ticket: {
-    customerCopy: "Ticket client",
-    shopCopy: "Ticket cuisine",
-    orderNumber: "Commande n°",
-    date: "Date",
-    qtyShort: "Qté",
+    customerLabel: "TICKET CLIENT",
+    shopLabel: "TICKET MAGASIN",
+    unitPrice: (price: string) => `${price} l'unité`,
     sauces: "Sauces",
     noSauce: "Sans sauce",
     note: "Note",
     total: "Total",
     thanks: "Merci et bon appétit !",
+  },
+
+  ticketModal: {
+    title: (number: string) => `Commande ${number} enregistrée`,
+    download: "Télécharger",
+    downloadBoth: "Télécharger les 2 tickets",
+    downloading: "Création du PDF…",
+    pdfError: "Le PDF n'a pas pu être créé. Réessayez ; la commande, elle, est bien enregistrée.",
+    newOrder: "Nouvelle commande",
   },
 
   kitchen: {

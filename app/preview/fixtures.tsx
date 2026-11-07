@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore, type ReactNode } from "react";
 import { Timestamp } from "firebase/firestore";
 import seed from "@/seed/products.json";
 import { dayKey } from "@/lib/i18n";
+import { orderTotal, type PlacedOrder } from "@/lib/orders";
 import { PreviewContext, type PreviewData } from "@/lib/preview-context";
 import { DEFAULT_SAUCES, type Order, type OrderItem, type Product } from "@/lib/types";
 
@@ -55,11 +56,36 @@ export function ClientOnly({ children }: { children: ReactNode }) {
   return mounted ? <>{children}</> : null;
 }
 
+/** A sample order for /preview/tickets: N° 007 with Arabic names, both sauces, a note, a drink. */
+export function previewPlacedOrder(): PlacedOrder {
+  const items = [item(8, 2, ["Tomate", "Piquante"], "sans oignon"), item(4, 1, ["Piquante"]), item(12, 1, []), item(18, 2, [])];
+  return {
+    id: "preview-007",
+    number: 7,
+    day: dayKey(new Date()),
+    items,
+    total: orderTotal(items),
+    printedAt: new Date(),
+    alreadySaved: false,
+    differs: false,
+  };
+}
+
 export function PreviewProvider({ children }: { children: ReactNode }) {
-  const [data] = useState<PreviewData>(() => ({
-    products: previewProducts,
-    sauces: [...DEFAULT_SAUCES],
-    orders: previewOrders(Date.now()),
-  }));
+  const [data] = useState<PreviewData>(() => {
+    // Local stand-in for the Firestore save: a per-day counter, nothing leaves the page.
+    const counters = new Map<string, number>();
+    return {
+      products: previewProducts,
+      sauces: [...DEFAULT_SAUCES],
+      orders: previewOrders(Date.now()),
+      placeOrder: async (orderId, items) => {
+        const day = dayKey(new Date());
+        const number = (counters.get(day) ?? 0) + 1;
+        counters.set(day, number);
+        return { id: orderId, number, day, items, total: orderTotal(items), printedAt: new Date(), alreadySaved: false, differs: false };
+      },
+    };
+  });
   return <PreviewContext.Provider value={data}>{children}</PreviewContext.Provider>;
 }

@@ -1,16 +1,17 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element -- Firebase Storage URLs, shown at a fixed small size */
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useContext, useEffect, useMemo, useReducer, useState } from "react";
 import { TopBar } from "@/components/TopBar";
-import { Tickets } from "@/components/Tickets";
 import { cartCount, cartReducer, loadCart, needsSauce, saveCart, toOrderItems } from "@/lib/cart";
 import { errorMessage, useOnline, useProducts, useSauces } from "@/lib/data";
 import { formatMAD, t } from "@/lib/i18n";
 import { clearPendingOrderId, pendingOrderId } from "@/lib/order-core";
 import { newOrderId, orderTotal, placeOrder, type PlacedOrder } from "@/lib/orders";
+import { PreviewContext } from "@/lib/preview-context";
 import type { Product, Role } from "@/lib/types";
 import { CartPanel } from "./CartPanel";
+import { TicketsDialog } from "./TicketsDialog";
 import styles from "./cashier.module.css";
 
 const tc = t.cashier;
@@ -26,6 +27,8 @@ export function CashierScreen({ uid, email, role }: Props) {
   const products = useProducts();
   const sauces = useSauces();
   const online = useOnline();
+  // /preview injects a local save so the whole flow can be tried without Firebase.
+  const save = useContext(PreviewContext)?.placeOrder ?? placeOrder;
 
   // Only mounted in the browser (behind the auth gate), so storage is readable here.
   const [lines, dispatch] = useReducer(cartReducer, undefined, loadCart);
@@ -33,17 +36,9 @@ export function CashierScreen({ uid, email, role }: Props) {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [lastOrder, setLastOrder] = useState<PlacedOrder | null>(null);
-  const [printJob, setPrintJob] = useState(0);
   const [cartOpen, setCartOpen] = useState(false);
 
   useEffect(() => saveCart(lines), [lines]);
-
-  // Print once the tickets for the new order are in the DOM.
-  useEffect(() => {
-    if (printJob === 0) return;
-    const frame = requestAnimationFrame(() => window.print());
-    return () => cancelAnimationFrame(frame);
-  }, [printJob]);
 
   const allProducts = useMemo(() => (products.status === "ready" ? products.data : []), [products]);
   const categories = useMemo(() => {
@@ -79,11 +74,12 @@ export function CashierScreen({ uid, email, role }: Props) {
     // if an earlier attempt was saved but its answer lost, this finds it.
     const orderId = pendingOrderId(localStorage, newOrderId);
     try {
-      const order = await placeOrder(orderId, items, uid);
+      const order = await save(orderId, items, uid);
       clearPendingOrderId(localStorage);
-      setLastOrder(order);
+      // The cart empties now; the tickets open in a window over the screen.
       dispatch({ type: "clear" });
-      setPrintJob((n) => n + 1);
+      setCartOpen(false);
+      setLastOrder(order);
     } catch (error) {
       // The cart and its pending id are kept: validating again is safe.
       const code = (error as { code?: string }).code;
@@ -101,7 +97,7 @@ export function CashierScreen({ uid, email, role }: Props) {
     <div className={styles.shell}>
       <TopBar role={role} email={email} />
 
-      <main className={`${styles.layout} screen-only`}>
+      <main className={styles.layout}>
         <section className={styles.menu} aria-labelledby="menu-heading">
           <h1 id="menu-heading" className="visually-hidden">
             {tc.title}
@@ -182,7 +178,6 @@ export function CashierScreen({ uid, email, role }: Props) {
           pendingSauces={pendingSauces}
           saving={saving}
           saveError={saveError}
-          lastOrder={lastOrder}
           open={cartOpen}
           onToggle={() => setCartOpen((o) => !o)}
           onValidate={validate}
@@ -192,13 +187,11 @@ export function CashierScreen({ uid, email, role }: Props) {
             dispatch({ type: "clear" });
             setSaveError(null);
           }}
-          onReprint={() => setPrintJob((n) => n + 1)}
-          onNewOrder={() => setLastOrder(null)}
         />
       </main>
 
       {/* Phone width: a bar that opens the cart */}
-      <div className={`${styles.cartBar} screen-only`} hidden={cartOpen}>
+      <div className={styles.cartBar} hidden={cartOpen}>
         <button type="button" className="btn btn-primary btn-lg" onClick={() => setCartOpen(true)} aria-expanded={cartOpen}>
           <span>{tc.showCart}</span>
           <span className="num">
@@ -207,7 +200,7 @@ export function CashierScreen({ uid, email, role }: Props) {
         </button>
       </div>
 
-      {lastOrder && <Tickets order={lastOrder} />}
+      {lastOrder && <TicketsDialog key={lastOrder.id} order={lastOrder} onClose={() => setLastOrder(null)} />}
     </div>
   );
 }

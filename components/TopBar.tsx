@@ -28,7 +28,7 @@ export function TopBar({ role, email, children }: Props) {
   const stations = STATIONS.filter((s) => s.roles.includes(role));
 
   return (
-    <header className={`${styles.bar} screen-only`}>
+    <header className={styles.bar}>
       <Link href="/" className={styles.wordmark} aria-label={`${t.shopName}, ${t.nav.home}`}>
         {t.shopName}
       </Link>

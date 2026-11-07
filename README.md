@@ -1,16 +1,16 @@
 # M3i9dat Ba Mbarek: ordering system
 
-Real-time ordering for the snack shop in Meknès: a touch cashier that prints two 80mm tickets, a hands-off kitchen screen, and an admin back office. Next.js 16 (App Router) + Firebase (Auth, Firestore, Storage). Prices in MAD, UI in French (all strings in `lib/i18n/fr.ts`).
+Real-time ordering for the snack shop in Meknès: a touch cashier that shows two 80mm tickets (downloadable as PDF), a hands-off kitchen screen, and an admin back office. Next.js 16 (App Router) + Firebase (Auth, Firestore, Storage). Prices in MAD, UI in French (all strings in `lib/i18n/fr.ts`).
 
 ## Routes
 
 | Route | Who | What |
 | --- | --- | --- |
 | `/login` | everyone | Email/password sign-in, then each account goes to its station |
-| `/cashier` | cashier, admin | Product grid, cart with per-line sauce choice, "Valider la commande" saves and prints two tickets |
+| `/cashier` | cashier, admin | Product grid, cart with per-line sauce choice, "Valider la commande" saves the order and opens its two tickets in a window |
 | `/kitchen` | kitchen, admin | Wall screen, no controls: live orders, each shown exactly 5 minutes from `createdAt` |
 | `/admin` | admin | Products (CRUD, photo, availability, order), sauces, order history by day with daily total |
-| `/preview/*` | development only | The three screens on fixture data (real menu, sample orders) for design review; 404 in production. `/preview/kitchen?n=14` crowds the board, `?sound=prompt`, `?sound=locked` or `?sound=real` show the sound states |
+| `/preview/*` | development only | The three screens on fixture data (real menu, sample orders) for design review; 404 in production. `/preview/cashier` runs the whole flow with a local save, `/preview/tickets` opens the tickets window on a sample N° 007 with Arabic names, `/preview/kitchen?n=14` crowds the board, `?sound=prompt`, `?sound=locked` or `?sound=real` show the sound states |
 
 ## Setup
 
@@ -64,7 +64,9 @@ If the page ever blocks the script or changes shape, it stops without importing 
 
 - **Order numbers** restart at 1 every day (Africa/Casablanca). One Firestore transaction bumps `counters/{YYYY-MM-DD}` and creates the order; the rules only accept the two together (the counter moves by exactly one and names the order created in the same write), and the day must be today's.
 - **No duplicate orders.** The cashier screen picks the order's document id (a Firestore auto-id) before the first save attempt and keeps it in `localStorage` until the save is confirmed. Every retry uses the same id; the transaction first reads `orders/{id}` and, if an earlier attempt was saved but its answer lost, returns that order (same number) and writes nothing. The id is dropped after a confirmed save or when the cashier taps "Vider" to start a new cart. If the cart was edited between the lost save and the retry, the screen says so: the tickets show the saved order, the one the kitchen has. Item prices and totals are computed by the cashier screen and only bounded by the rules; full server-side price checking would need a Cloud Function. Transactions need the network: offline, validation fails with a clear message and the cart is kept (also in `localStorage`, so a reload keeps it).
-- **Tickets** print with `window.print()` and `@media print`, sized for an 80mm roll, one ticket per page (customer ticket with prices, then the kitchen ticket with large items). In the print dialog pick the thermal printer, margins none, scale 100%. For silent printing on the cashier PC, start Chrome with `--kiosk-printing`.
+- **Order numbers on tickets** read `N° 007` (three digits, more if needed). Each shop day starts at 1: the day key is the date in **Africa/Casablanca** (`lib/i18n` `dayKey`), so the counter rolls over at midnight in Meknès (23:00 UTC normally, 00:00 UTC during Ramadan when Morocco is on UTC+0). Unit tests cover the rollover.
+- **Tickets** (no printer: class/demo setup). After « Valider la commande » a window shows both tickets side by side (stacked on a phone): the **TICKET CLIENT**, light, with unit prices, line totals and the total; and the **TICKET MAGASIN**, with an orange banner, the number in very large type, large bold items and sauces, notes, the time, and no prices. « Nouvelle commande » (or Esc) closes it; the cart is already empty.
+- **PDF download**: « Télécharger » under each ticket, or « Télécharger les 2 tickets » for both, saves `ticket-client-N007.pdf` / `ticket-magasin-N007.pdf` (two separate files). Generated in the browser, no server: the ticket as the browser draws it (`html-to-image`, with the page's fonts inlined) is placed on a `jsPDF` page **80mm wide**, height fitted to the ticket. That keeps the PDF identical to the screen and renders the Arabic product names correctly (Noto Sans Arabic is loaded for them; jsPDF's own text engine does not shape Arabic reliably). The PDF text is therefore an image, not selectable. A browser may ask once to allow "multiple downloads" for the two-ticket button.
 - **Kitchen timing** uses server time: each kitchen screen measures its clock against Firestore every 10 minutes (`clock/{uid}`) and derives everything from `createdAt` on a 1-second tick, so a refresh shows the same board. The board shrinks text until every card fits; if a small screen still cannot hold them all, the header says how many do not fit. Use a 1080p screen or larger.
 - **Kitchen sound**: a short, loud two-note chime (generated with the Web Audio API, no audio file) plays for each new order, never for the orders already on screen when the page loads. Browsers block audio until someone touches the page, so:
   - at startup `/kitchen` shows an **"Activer le son"** screen once per browser session: one tap, click or key press unlocks the sound and it disappears;

@@ -49,9 +49,15 @@
   --color-success-soft: oklch(94% 0.035 150);
   --color-overlay: oklch(21% 0.025 45 / 0.45);
 
-  /* Faces: Antonio (condensed, the order number and heads), Figtree (everything else) */
-  --font-display: var(--font-antonio), "Antonio", "Arial Narrow", ui-sans-serif, sans-serif;
-  --font-body: var(--font-figtree), "Figtree", ui-sans-serif, system-ui, sans-serif;
+  /* Tickets (receipt paper, same values in every theme) */
+  --color-ticket: oklch(99.4% 0.004 80);
+  --color-ticket-ink: oklch(18% 0.02 45);
+  --color-ticket-muted: oklch(45% 0.025 50);
+  --color-ticket-rule: oklch(80% 0.02 60);
+
+  /* Faces: Antonio (condensed, the order number and heads), Figtree (everything else), Noto Sans Arabic for Arabic letters only */
+  --font-display: var(--font-antonio), "Antonio", var(--font-arabic), "Arial Narrow", ui-sans-serif, sans-serif;
+  --font-body: var(--font-figtree), "Figtree", var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
 
   --radius-control: 10px; --radius-card: 14px; --radius-pill: 999px;
   --rule-hair: 1px; --rule-strong: 2px;
