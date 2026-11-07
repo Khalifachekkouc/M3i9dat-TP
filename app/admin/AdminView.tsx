@@ -9,9 +9,10 @@ import type { Role } from "@/lib/types";
 import { ProductsPanel } from "./ProductsPanel";
 import { SaucesPanel } from "./SaucesPanel";
 import { OrdersPanel } from "./OrdersPanel";
+import { KitchenSettingsPanel } from "./KitchenSettingsPanel";
 import styles from "./admin.module.css";
 
-const TABS = ["products", "sauces", "orders"] as const;
+const TABS = ["products", "sauces", "kitchen", "orders"] as const;
 type Tab = (typeof TABS)[number];
 
 function AdminTabs() {
@@ -37,6 +38,7 @@ function AdminTabs() {
       </nav>
       {tab === "products" && <ProductsPanel />}
       {tab === "sauces" && <SaucesPanel />}
+      {tab === "kitchen" && <KitchenSettingsPanel />}
       {tab === "orders" && <OrdersPanel />}
     </>
   );

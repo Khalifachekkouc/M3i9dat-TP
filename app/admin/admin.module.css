@@ -422,6 +422,27 @@
   max-width: 20rem;
 }
 
+/* ---------- Kitchen settings ---------- */
+.prepForm {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.prepCurrent {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.prepFields {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.prepInput {
+  width: 7rem;
+  font-size: var(--text-xl);
+}
+
 /* ---------- History ---------- */
 .historyCol {
   display: grid;

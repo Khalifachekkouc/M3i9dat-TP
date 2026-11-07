@@ -55,9 +55,9 @@ let ids = 0;
 const createId = () => `id${String(++ids).padStart(18, "0")}`;
 
 /** What the cashier screen does on "Valider": reuse or create the pending id, save, clear on success. */
-async function validate(store: FakeStore, storage: KeyValueStore, items: OrderItem[]) {
+async function validate(store: FakeStore, storage: KeyValueStore, items: OrderItem[], prepDurationSec = 300) {
   const orderId = pendingOrderId(storage, createId);
-  const result = await commitOrder(store, { orderId, day: DAY, items, uid: "cashier" }, TS);
+  const result = await commitOrder(store, { orderId, day: DAY, items, uid: "cashier", prepDurationSec }, TS);
   clearPendingOrderId(storage);
   return result;
 }
@@ -131,9 +131,31 @@ test("starting a new cart drops the pending id", () => {
 test("saved items drop empty notes and keep only model fields", async () => {
   const store = new FakeStore();
   const messy = { ...tacos, note: "  ", extra: "x" } as OrderItem;
-  const result = await commitOrder(store, { orderId: createId(), day: DAY, items: [messy], uid: "u" }, TS);
+  const result = await commitOrder(store, { orderId: createId(), day: DAY, items: [messy], uid: "u", prepDurationSec: 300 }, TS);
   const saved = store.docs.get(`orders/${result.orderId}`) as { items: DocData[]; total: number; createdAt: string };
   assert.deepEqual(Object.keys(saved.items[0]).sort(), ["name", "price", "productId", "qty", "sauces"]);
   assert.equal(saved.total, 50);
   assert.equal(saved.createdAt, TS);
+});
+
+test("new orders start « preparing » with a copy of the prep duration", async () => {
+  const store = new FakeStore();
+  const storage = new MemoryStorage();
+  const first = await validate(store, storage, [tacos], 300);
+  // The admin changes the setting to 2 minutes: only the next order gets it.
+  const second = await validate(store, storage, [coca], 120);
+  const a = store.docs.get(`orders/${first.orderId}`) as { status: string; prepDurationSec: number };
+  const b = store.docs.get(`orders/${second.orderId}`) as { status: string; prepDurationSec: number };
+  assert.equal(a.status, "preparing");
+  assert.equal(a.prepDurationSec, 300, "the first order keeps the duration it was made with");
+  assert.equal(b.prepDurationSec, 120);
+  assert.ok(!("completedAt" in a) && !("completedBy" in a), "no completion fields at creation");
+});
+
+test("an invalid prep duration is refused before anything is written", async () => {
+  const store = new FakeStore();
+  for (const bad of [10, 3601, 90.5]) {
+    await assert.rejects(commitOrder(store, { orderId: createId(), day: DAY, items: [tacos], uid: "u", prepDurationSec: bad }, TS));
+  }
+  assert.equal(store.docs.size, 0);
 });

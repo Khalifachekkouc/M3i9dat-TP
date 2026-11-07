@@ -121,8 +121,18 @@ export const fr = {
 
   kitchen: {
     title: "Cuisine",
-    waitingTitle: "Aucune commande en préparation",
+    waitingTitle: "Rien en préparation",
     waiting: "Les nouvelles commandes apparaissent ici toutes seules.",
+    preparingTitle: "En préparation",
+    completedTitle: "Terminées",
+    preparingCount: (n: number) => `${n} en préparation`,
+    complete: "Terminé",
+    completeAria: (number: string) => `Terminé, commande ${number}`,
+    completeError: "La commande n'a pas pu être marquée terminée. Réessayez.",
+    completedAt: (time: string) => `Terminée à ${time}`,
+    byManual: "Manuel",
+    byAuto: "Auto",
+    completedEmpty: "Aucune commande terminée aujourd'hui.",
     elapsed: (m: number, s: number) => `${m} min ${String(s).padStart(2, "0")} s`,
     remaining: (m: number, s: number) => `reste ${m}:${String(s).padStart(2, "0")}`,
     lastMinute: "Dernière minute",
@@ -131,7 +141,6 @@ export const fr = {
     connectionLost: "Connexion perdue. Reconnexion automatique…",
     clockSyncing: "Synchronisation de l'heure…",
     listError: "Lecture des commandes impossible. Nouvel essai automatique…",
-    ordersCount: (n: number) => (n > 1 ? `${n} commandes en cours` : `${n} commande en cours`),
     signedOut: "Écran cuisine déconnecté. Connectez un compte cuisine.",
     soundPromptTitle: "Activer le son",
     soundPromptText:
@@ -139,16 +148,32 @@ export const fr = {
     soundActivate: "Activer le son",
     soundOff: "Son désactivé : touchez l'écran pour l'activer",
     soundUnsupported: "Son indisponible sur ce navigateur",
-    offScreen: (n: number) =>
-      n > 1 ? `${n} commandes ne tiennent pas à l'écran` : "1 commande ne tient pas à l'écran",
   },
 
   admin: {
     title: "Administration",
+    kitchen: {
+      heading: "Temps de préparation",
+      lead:
+        "Durée pendant laquelle une commande reste « En préparation » en cuisine avant de passer seule dans « Terminées ». Chaque commande garde la durée réglée au moment où elle est créée : un changement ne vaut que pour les nouvelles commandes.",
+      minutes: "Minutes",
+      seconds: "Secondes",
+      current: (text: string) => `Réglage actuel : ${text}.`,
+      defaultNote: "Valeur par défaut (pas encore enregistrée).",
+      bounds: "Entre 30 secondes et 60 minutes.",
+      format: "Saisissez des nombres entiers (secondes de 0 à 59).",
+      tooShort: "Trop court : 30 secondes minimum.",
+      tooLong: "Trop long : 60 minutes maximum.",
+      saved: (text: string) => `Enregistré : ${text} pour les nouvelles commandes.`,
+      saveError: "Enregistrement impossible.",
+      duration: (m: number, s: number) =>
+        m === 0 ? `${s} s` : s === 0 ? `${m} min` : `${m} min ${String(s).padStart(2, "0")} s`,
+    },
     tabs: {
       products: "Produits",
       sauces: "Sauces",
       orders: "Historique",
+      kitchen: "Cuisine",
     },
     products: {
       heading: "Produits",
@@ -164,8 +189,6 @@ export const fr = {
       imageTooBig: "Photo trop lourde (5 Mo maximum).",
       imageWrongType: "Ce fichier n'est pas une image.",
       imageUrl: "Adresse de la photo",
-      imageUrlHelp:
-        "L'envoi de photos n'est pas disponible : Firebase Storage n'est pas activé sur ce projet. Collez l'adresse (https://…) d'une image en ligne, ou laissez vide.",
       imageUrlInvalid: "Adresse invalide : elle doit commencer par https:// (2048 caractères maximum).",
       removeImage: "Retirer la photo",
       available: "Disponible à la vente",

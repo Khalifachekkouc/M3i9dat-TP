@@ -51,6 +51,20 @@ export interface Order {
   /** Server timestamp. Null only while a local write is pending. */
   createdAt: Timestamp | null;
   createdBy: string;
+  /** "preparing" until « Terminé » is tapped. Missing on older orders (= preparing). */
+  status: OrderStatus;
+  /** Set by « Terminé » (server time). Auto completion is derived, never written. */
+  completedAt: Timestamp | null;
+  completedBy: CompletedBy | null;
+  /** Copy of settings/kitchen.prepDurationSec when the order was created. */
+  prepDurationSec: number;
+}
+
+export type OrderStatus = "preparing" | "completed";
+export type CompletedBy = "kitchen" | "auto";
+
+export interface KitchenSettings {
+  prepDurationSec: number;
 }
 
 export interface SaucesSettings {

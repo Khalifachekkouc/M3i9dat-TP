@@ -1,57 +1,21 @@
-/* Hallmark · module of app/globals.css (stamp, tokens, focus ring, reduced motion) · posture: committed */
+/* Hallmark · module of app/globals.css (stamp, tokens, focus ring, reduced motion) · posture: committed · screen: cuisine, two zones, en préparation with a « Terminé » per card, terminées as a compact log */
 /* Hallmark · dismissed 23 · the orange station name and the three-pulse wash on a new order are the arrival signal read from across the kitchen; the wash fades to zero in three seconds */
-/* Read from across the kitchen: nothing here is clickable, nothing needs a cursor. */
+/* Read from across the kitchen, worked by touch: large type, 56px+ targets. */
 .screen {
-  --k-number: 6rem;
-  --k-item: 2.074rem;
-  --k-sauce: 1.728rem;
-  --k-min-col: 26rem;
   height: 100dvh;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  padding: var(--space-md) var(--gutter) var(--space-lg);
+  padding: var(--space-md) var(--gutter) var(--space-md);
   background: var(--color-paper);
   color: var(--color-ink);
-  cursor: none;
-  user-select: none;
-}
-
-.screen[data-density="medium"] {
-  --k-number: 4.5rem;
-  --k-item: 1.728rem;
-  --k-sauce: 1.44rem;
-  --k-min-col: 24rem;
-}
-
-.screen[data-density="compact"] {
-  --k-number: 3.5rem;
-  --k-item: 1.44rem;
-  --k-sauce: 1.2rem;
-  --k-min-col: 19rem;
-}
-
-.screen[data-density="tiny"] {
-  --k-number: 2.5rem;
-  --k-item: 1.2rem;
-  --k-sauce: 1rem;
-  --k-min-col: 15rem;
-}
-
-.hidden {
-  padding: var(--space-2xs) var(--space-sm);
-  border-radius: var(--radius-control);
-  border: var(--rule-strong) solid var(--color-urgent);
-  color: var(--color-urgent);
-  font-weight: 700;
-  font-size: var(--text-xl);
 }
 
 .head {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: var(--space-lg);
+  gap: var(--space-sm) var(--space-lg);
   padding-bottom: var(--space-sm);
   border-bottom: var(--rule-strong) solid var(--color-rule);
 }
@@ -89,6 +53,51 @@
   border: var(--rule-strong) solid var(--color-urgent);
 }
 
+/* ---------- The two zones ---------- */
+.zones {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--space-lg);
+}
+
+/* Each zone's title stays put; its body scrolls on its own */
+.zone {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-height: 0;
+}
+
+.zoneBody {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.zoneDone {
+  padding-inline-start: var(--space-lg);
+  border-inline-start: var(--rule-strong) solid var(--color-rule);
+}
+
+.zoneTitle {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-xs);
+  font-size: var(--text-3xl);
+}
+
+.zoneCount {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  color: var(--color-muted);
+}
+
 /* ---------- Empty ---------- */
 .waiting {
   flex: 1;
@@ -101,29 +110,29 @@
 .waitingTitle {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
   line-height: 1;
   color: var(--color-ink-2);
 }
 
 .waitingText {
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   color: var(--color-muted);
   max-width: none;
 }
 
-/* ---------- The board ---------- */
+.doneEmpty {
+  font-size: var(--text-lg);
+  color: var(--color-muted);
+}
+
+/* ---------- En préparation ---------- */
 .board {
-  container-type: inline-size;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--k-min-col)), 1fr));
-  /* Rows take their content's height: a card is never squeezed, it overflows and the board steps down a size */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
   grid-auto-rows: max-content;
   align-content: start;
   gap: var(--space-md);
@@ -134,7 +143,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
-  padding: var(--space-md) var(--space-lg) var(--space-md);
+  padding: var(--space-md);
   border-radius: var(--radius-card);
   border: 3px solid var(--color-rule);
   background: var(--color-paper-2);
@@ -173,10 +182,11 @@
 }
 
 .number {
+  font-variant-numeric: tabular-nums;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--k-number);
-  line-height: 0.9;
+  font-size: 3.5rem;
+  line-height: 0.95;
   letter-spacing: var(--tracking-display);
 }
 
@@ -192,10 +202,10 @@
 
 .newTag {
   padding: var(--space-xs) var(--space-md);
-  line-height: 1.25;
   border-radius: var(--radius-pill);
   background: var(--color-accent);
   color: var(--color-accent-ink);
+  line-height: 1.25;
 }
 
 .items {
@@ -218,9 +228,9 @@
 
 .qty,
 .name {
-  font-size: var(--k-item);
+  font-size: var(--text-2xl);
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.15;
 }
 
 .qty {
@@ -228,14 +238,16 @@
   text-align: end;
 }
 
+/* An Arabic name keeps its right-to-left reading but sits beside its quantity */
 .name {
+  justify-self: start;
   overflow-wrap: break-word;
   min-width: 0;
 }
 
 .sauce {
   grid-column: 2;
-  font-size: var(--k-sauce);
+  font-size: var(--text-xl);
   font-weight: 700;
   line-height: 1.2;
   color: var(--color-accent);
@@ -247,12 +259,11 @@
 
 .note {
   grid-column: 2;
-  font-size: var(--k-sauce);
+  font-size: var(--text-lg);
   font-style: italic;
   color: var(--color-ink-2);
 }
 
-/* ---------- The five minutes, draining ---------- */
 .progress {
   display: grid;
   gap: var(--space-2xs);
@@ -292,13 +303,73 @@
   color: var(--color-urgent);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .card[data-new]::after {
-    animation: none;
-  }
-  .fill {
-    transition: none;
-  }
+/* « Terminé »: the one action of a card, big enough for a wet thumb */
+.done {
+  width: 100%;
+  min-height: 64px;
+  font-size: var(--text-2xl);
+}
+
+/* ---------- Terminées: a compact log, no buttons ---------- */
+.doneList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.doneCard {
+  display: grid;
+  gap: var(--space-2xs);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-card);
+  border: var(--rule-hair) solid var(--color-rule);
+}
+
+.doneHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.doneNumber {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-3xl);
+  line-height: 1;
+  color: var(--color-ink-2);
+}
+
+.doneBy {
+  padding: var(--space-2xs) var(--space-sm);
+  border-radius: var(--radius-pill);
+  border: var(--rule-strong) solid var(--color-edge);
+  font-weight: 700;
+  font-size: var(--text-md);
+  line-height: 1.3;
+  color: var(--color-ink-2);
+}
+
+.doneBy[data-by="kitchen"] {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.doneAt {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.doneItems {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-lg);
+  color: var(--color-ink-2);
 }
 
 /* ---------- Sound: the startup screen and the header indicator ---------- */
@@ -312,7 +383,6 @@
   line-height: 1.3;
 }
 
-/* The one moment this screen takes input: a tap or a key unlocks the sound */
 .prompt {
   position: fixed;
   inset: 0;
@@ -321,7 +391,6 @@
   place-items: center;
   padding: var(--space-lg) var(--gutter);
   background: var(--color-overlay-kitchen);
-  cursor: auto;
 }
 
 .promptBox {
@@ -351,4 +420,33 @@
   min-height: 72px;
   padding-inline: var(--space-xl);
   font-size: var(--text-2xl);
+}
+
+/* ---------- Narrow screens: the zones stack and the page scrolls ---------- */
+@media (max-width: 60rem) {
+  .screen {
+    height: auto;
+    min-height: 100dvh;
+  }
+  .zones {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .zoneBody {
+    overflow: visible;
+  }
+  .zoneDone {
+    padding-inline-start: 0;
+    padding-top: var(--space-md);
+    border-inline-start: none;
+    border-top: var(--rule-strong) solid var(--color-rule);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card[data-new]::after {
+    animation: none;
+  }
+  .fill {
+    transition: none;
+  }
 }

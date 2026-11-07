@@ -307,7 +307,7 @@ export function ProductForm({ product, categories, sauces, nextOrder, onClose, o
         </div>
         <p id={id("image-help")} className="field-help" data-error={errors.image ? "true" : undefined} aria-live="polite">
           {errors.image ??
-            (!storageEnabled ? tp.imageUrlHelp : progress !== null ? tp.uploading(progress) : tp.imageHelp)}
+            (!storageEnabled ? "" : progress !== null ? tp.uploading(progress) : tp.imageHelp)}
         </p>
       </div>
 

@@ -52,7 +52,7 @@ test("the counter restarts at 1 on the new shop day", async () => {
   };
   const item = { productId: "p", name: "Tacos", price: 25, qty: 1, sauces: [] };
   const at = (iso: string, id: string) =>
-    commitOrder(store, { orderId: id, day: dayKey(new Date(iso)), items: [item], uid: "u" }, "ts");
+    commitOrder(store, { orderId: id, day: dayKey(new Date(iso)), items: [item], uid: "u", prepDurationSec: 300 }, "ts");
 
   const a = await at("2026-11-06T21:00:00Z", "a"); // 22:00 on the 6th
   const b = await at("2026-11-06T22:58:00Z", "b"); // 23:58 on the 6th

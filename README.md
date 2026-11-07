@@ -1,6 +1,6 @@
 # M3i9dat Ba Mbarek: ordering system
 
-Real-time ordering for the snack shop in Meknès: a touch cashier that shows two 80mm tickets (downloadable as PDF), a hands-off kitchen screen, and an admin back office. Next.js 16 (App Router) + Firebase (Auth, Firestore, Storage). Prices in MAD, UI in French (all strings in `lib/i18n/fr.ts`).
+Real-time ordering for the snack shop in Meknès: a touch cashier that shows two 80mm tickets (downloadable as PDF), a touch kitchen screen with « En préparation » and « Terminées » zones, and an admin back office. Next.js 16 (App Router) + Firebase (Auth, Firestore, Storage). Prices in MAD, UI in French (all strings in `lib/i18n/fr.ts`).
 
 ## Routes
 
@@ -8,9 +8,9 @@ Real-time ordering for the snack shop in Meknès: a touch cashier that shows two
 | --- | --- | --- |
 | `/login` | everyone | Email/password sign-in, then each account goes to its station |
 | `/cashier` | cashier, admin | Product grid, cart with per-line sauce choice, "Valider la commande" saves the order and opens its two tickets in a window |
-| `/kitchen` | kitchen, admin | Wall screen, no controls: live orders, each shown exactly 5 minutes from `createdAt` |
-| `/admin` | admin | Products (CRUD, photo, availability, order), sauces, order history by day with daily total |
-| `/preview/*` | development only | The three screens on fixture data (real menu, sample orders) for design review; 404 in production. `/preview/cashier` runs the whole flow with a local save, `/preview/tickets` opens the tickets window on a sample N° 007 with Arabic names, `/preview/kitchen?n=14` crowds the board, `?sound=prompt`, `?sound=locked` or `?sound=real` show the sound states |
+| `/kitchen` | kitchen, admin | Two zones: « En préparation » (oldest first, a « Terminé » button per card) and « Terminées » (today's last 20, newest first, « Manuel » / « Auto ») |
+| `/admin` | admin | Products (CRUD, photo, availability, order), sauces, « Cuisine » (prep time), order history by day with daily total |
+| `/preview/*` | development only | The three screens on fixture data (real menu, sample orders) for design review; 404 in production. `/preview/cashier` runs the whole flow with a local save, `/preview/tickets` opens the tickets window on a sample N° 007 with Arabic names, `/preview/kitchen` has orders in every state (tap « Terminé » to try it), `?n=14` crowds it, `?sound=prompt`, `?sound=locked` or `?sound=real` show the sound states |
 
 ## Setup
 
@@ -67,7 +67,9 @@ If the page ever blocks the script or changes shape, it stops without importing 
 - **Order numbers on tickets** read `N° 007` (three digits, more if needed). Each shop day starts at 1: the day key is the date in **Africa/Casablanca** (`lib/i18n` `dayKey`), so the counter rolls over at midnight in Meknès (23:00 UTC normally, 00:00 UTC during Ramadan when Morocco is on UTC+0). Unit tests cover the rollover.
 - **Tickets** (no printer: class/demo setup). After « Valider la commande » a window shows both tickets side by side (stacked on a phone): the **TICKET CLIENT**, light, with unit prices, line totals and the total; and the **TICKET MAGASIN**, with an orange banner, the number in very large type, large bold items and sauces, notes, the time, and no prices. « Nouvelle commande » (or Esc) closes it; the cart is already empty.
 - **PDF download**: « Télécharger » under each ticket, or « Télécharger les 2 tickets » for both, saves `ticket-client-N007.pdf` / `ticket-magasin-N007.pdf` (two separate files). Generated in the browser, no server: the ticket as the browser draws it (`html-to-image`, with the page's fonts inlined) is placed on a `jsPDF` page **80mm wide**, height fitted to the ticket. That keeps the PDF identical to the screen and renders the Arabic product names correctly (Noto Sans Arabic is loaded for them; jsPDF's own text engine does not shape Arabic reliably). The PDF text is therefore an image, not selectable. A browser may ask once to allow "multiple downloads" for the two-ticket button.
-- **Kitchen timing** uses server time: each kitchen screen measures its clock against Firestore every 10 minutes (`clock/{uid}`) and derives everything from `createdAt` on a 1-second tick, so a refresh shows the same board. The board shrinks text until every card fits; if a small screen still cannot hold them all, the header says how many do not fit. Use a 1080p screen or larger.
+- **Prep time.** `settings/kitchen = { prepDurationSec }` (default 300, between 30 s and 60 min), set in /admin > « Cuisine ». The cashier copies the current value onto each new order (`orders.prepDurationSec`), so a change only affects new orders. Create the document once with `npm run seed:settings` (it never overwrites an admin's value; the cashier falls back to 300 s if it is missing).
+- **Order status.** New orders are `status: "preparing"`. « Terminé » on the kitchen screen writes `status: "completed"`, `completedAt` (server time) and `completedBy: "kitchen"`, nothing else (the rules enforce it, from preparing to completed only). An order still « preparing » after `createdAt + prepDurationSec` is **completed automatically**: the screens derive it (« Auto »), nothing is written, so it works after a refresh and even when no kitchen screen was open. Orders made before statuses existed count as « preparing » with 300 s.
+- **Kitchen screen.** Server time on a 1-second tick (each screen measures its clock against Firestore every 10 minutes, `clock/{uid}`), so a refresh shows the same board. It listens to today's and yesterday's orders (an order made just before midnight can still be in preparation); « Terminées » shows today's only, the last 20. Each zone scrolls on its own; touch targets are 64px.
 - **Kitchen sound**: a short, loud two-note chime (generated with the Web Audio API, no audio file) plays for each new order, never for the orders already on screen when the page loads. Browsers block audio until someone touches the page, so:
   - at startup `/kitchen` shows an **"Activer le son"** screen once per browser session: one tap, click or key press unlocks the sound and it disappears;
   - after a refresh the browser locks audio again: the header shows **"Son désactivé : touchez l'écran pour l'activer"** until someone taps anywhere;
@@ -80,9 +82,10 @@ If the page ever blocks the script or changes shape, it stops without importing 
 | Command | |
 | --- | --- |
 | `npm run dev` / `build` / `start` | Next.js |
-| `npm test` | Unit tests (cart and sauce rules, order retries without duplicates, kitchen 5-minute window, new-order detection) |
+| `npm test` | Unit tests (cart and sauce rules, order retries without duplicates, zones and auto completion, prep-time snapshot and settings, new-order detection, tickets and day rollover) |
+| `npm run seed:settings` | Creates `settings/kitchen` (300 s) and `settings/sauces` if missing |
 | `npm run typecheck`, `npm run lint` | TypeScript, ESLint |
-| `npm run smoke-test` | Checks the **deployed** rules on the live project, role by role (needs `SMOKE_ADMIN_EMAIL`, `SMOKE_ADMIN_PASSWORD`, and the same for `CASHIER` and `KITCHEN`, as environment variables only). Creates test orders and deletes them, resets today's counter if it created it |
+| `npm run smoke-test` | Checks the **deployed** rules on the live project, role by role (needs `SMOKE_ADMIN_EMAIL`, `SMOKE_ADMIN_PASSWORD`, and the same for `CASHIER` and `KITCHEN`, as environment variables only). Covers « Terminé » (kitchen only, completion fields only), prep-time bounds and the snapshot. Creates test orders and deletes them, puts today's counter and `settings/kitchen` back as they were |
 
 ## Without Firebase Storage (current setup)
 

@@ -11,7 +11,8 @@
     "user:create": "tsx scripts/create-user.ts",
     "import:glovo": "tsx scripts/import-glovo.ts",
     "test": "tsx --test lib/*.test.ts",
-    "smoke-test": "tsx scripts/smoke-test.ts"
+    "smoke-test": "tsx scripts/smoke-test.ts",
+    "seed:settings": "tsx scripts/seed-settings.ts"
   },
   "dependencies": {
     "firebase": "^12.19.0",

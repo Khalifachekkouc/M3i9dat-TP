@@ -9,6 +9,7 @@
  *     counter and the order together.
  * So re-validating after a network drop can never create a second order.
  */
+import { isValidPrepDuration } from "./kitchen-settings";
 import type { OrderItem } from "./types";
 
 export type DocData = Record<string, unknown>;
@@ -28,6 +29,8 @@ export interface CommitInput {
   day: string;
   items: OrderItem[];
   uid: string;
+  /** settings/kitchen.prepDurationSec read by the cashier screen; copied onto the order. */
+  prepDurationSec: number;
 }
 
 export type CommitResult =
@@ -60,6 +63,7 @@ export function sameItems(a: OrderItem[], b: OrderItem[]): boolean {
  * @param serverTime the value stored as createdAt (Firestore: serverTimestamp()).
  */
 export async function commitOrder(store: StoreLike, input: CommitInput, serverTime: unknown): Promise<CommitResult> {
+  if (!isValidPrepDuration(input.prepDurationSec)) throw new Error(`invalid prepDurationSec: ${input.prepDurationSec}`);
   const items = cleanItems(input.items);
   const total = orderTotal(items);
   const orderPath = `orders/${input.orderId}`;
@@ -82,7 +86,17 @@ export async function commitOrder(store: StoreLike, input: CommitInput, serverTi
     const counter = await tx.get(counterPath);
     const number = (Number(counter?.value) || 0) + 1;
     tx.set(counterPath, { value: number, lastOrderId: input.orderId });
-    tx.set(orderPath, { number, day: input.day, items, total, createdAt: serverTime, createdBy: input.uid });
+    // The prep duration is snapshotted: a later change of the setting does not touch this order.
+    tx.set(orderPath, {
+      number,
+      day: input.day,
+      items,
+      total,
+      createdAt: serverTime,
+      createdBy: input.uid,
+      status: "preparing",
+      prepDurationSec: input.prepDurationSec,
+    });
     return { status: "created", orderId: input.orderId, number, day: input.day, items, total };
   });
 }

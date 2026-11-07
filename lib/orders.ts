@@ -45,10 +45,15 @@ const firestoreStore: StoreLike = {
  * same id after any failure returns the already-saved order instead of a copy.
  * Transactions need the server: offline, this rejects and the cart is kept.
  */
-export async function placeOrder(orderId: string, items: OrderItem[], uid: string): Promise<PlacedOrder> {
+export async function placeOrder(
+  orderId: string,
+  items: OrderItem[],
+  uid: string,
+  prepDurationSec: number,
+): Promise<PlacedOrder> {
   const result = await commitOrder(
     firestoreStore,
-    { orderId, day: dayKey(new Date()), items, uid },
+    { orderId, day: dayKey(new Date()), items, uid, prepDurationSec },
     serverTimestamp(),
   );
   if (result.status === "created") {

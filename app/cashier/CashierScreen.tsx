@@ -4,7 +4,8 @@
 import { useContext, useEffect, useMemo, useReducer, useState } from "react";
 import { TopBar } from "@/components/TopBar";
 import { cartCount, cartReducer, loadCart, needsSauce, saveCart, toOrderItems } from "@/lib/cart";
-import { errorMessage, useOnline, useProducts, useSauces } from "@/lib/data";
+import { errorMessage, useKitchenSettings, useOnline, useProducts, useSauces } from "@/lib/data";
+import { DEFAULT_PREP_SEC } from "@/lib/kitchen-settings";
 import { formatMAD, t } from "@/lib/i18n";
 import { clearPendingOrderId, pendingOrderId } from "@/lib/order-core";
 import { newOrderId, orderTotal, placeOrder, type PlacedOrder } from "@/lib/orders";
@@ -26,6 +27,10 @@ interface Props {
 export function CashierScreen({ uid, email, role }: Props) {
   const products = useProducts();
   const sauces = useSauces();
+  // Copied onto each new order; 300 s while the setting is missing or still loading.
+  const kitchenSettings = useKitchenSettings();
+  const prepDurationSec =
+    kitchenSettings.status === "ready" ? kitchenSettings.data.prepDurationSec : DEFAULT_PREP_SEC;
   const online = useOnline();
   // /preview injects a local save so the whole flow can be tried without Firebase.
   const save = useContext(PreviewContext)?.placeOrder ?? placeOrder;
@@ -74,7 +79,7 @@ export function CashierScreen({ uid, email, role }: Props) {
     // if an earlier attempt was saved but its answer lost, this finds it.
     const orderId = pendingOrderId(localStorage, newOrderId);
     try {
-      const order = await save(orderId, items, uid);
+      const order = await save(orderId, items, uid, prepDurationSec);
       clearPendingOrderId(localStorage);
       // The cart empties now; the tickets open in a window over the screen.
       dispatch({ type: "clear" });

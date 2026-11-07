@@ -79,6 +79,20 @@ service cloud.firestore {
         && isBoundedList(request.resource.data.list, 30);
     }
 
+    // ---------- settings (kitchen prep duration) ----------
+    // settings/kitchen = { prepDurationSec }: how long an order stays « En
+    // préparation » before it completes on its own. Copied onto each new order.
+    function validPrepDuration(value) {
+      return value is int && value >= 30 && value <= 3600;
+    }
+
+    match /settings/kitchen {
+      allow read: if isStaff();
+      allow write: if isAdmin()
+        && request.resource.data.keys().hasOnly(['prepDurationSec'])
+        && validPrepDuration(request.resource.data.prepDurationSec);
+    }
+
     // ---------- daily order counters ----------
     // counters/{YYYY-MM-DD} = { value: <last number of that day>, lastOrderId }.
     // Only ever moves up by exactly one, and only in the same write that
@@ -138,7 +152,10 @@ service cloud.firestore {
       allow read: if hasRole(['cashier', 'kitchen', 'admin']);
 
       allow create: if hasRole(['cashier', 'admin'])
-        && request.resource.data.keys().hasOnly(['number', 'day', 'items', 'total', 'createdAt', 'createdBy'])
+        && request.resource.data.keys().hasOnly(['number', 'day', 'items', 'total', 'createdAt', 'createdBy', 'status', 'prepDurationSec'])
+        // A new order starts « preparing », with its own copy of the prep duration.
+        && request.resource.data.status == 'preparing'
+        && validPrepDuration(request.resource.data.prepDurationSec)
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.createdAt == request.time
         && plausibleDay(request.resource.data.day)
@@ -155,6 +172,18 @@ service cloud.firestore {
         && request.resource.data.total >= 0
         && request.resource.data.total <= 100000;
 
+      // « Terminé » on the kitchen screen: only the three completion fields
+      // change, only from preparing to completed, stamped with the server time.
+      // Items, number, totals, createdAt and prepDurationSec stay as they are.
+      // (Auto completion after the timer is derived by the screens, never written.)
+      allow update: if hasRole(['kitchen'])
+        && resource.data.get('status', 'preparing') == 'preparing'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'completedAt', 'completedBy'])
+        && request.resource.data.status == 'completed'
+        && request.resource.data.completedAt == request.time
+        && request.resource.data.completedBy == 'kitchen';
+
+      // The admin keeps full access (corrections, the history, cleanup).
       allow update, delete: if isAdmin();
     }
 

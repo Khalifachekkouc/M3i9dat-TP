@@ -26,10 +26,19 @@ const item = (index: number, qty: number, sauces: string[], note?: string): Orde
   return { productId: p.id, name: p.name, price: p.price, qty, sauces: p.sauceOptions.length ? sauces : [], ...(note ? { note } : {}) };
 };
 
-/** Sample orders (preview only), aged relative to `now`. */
+/**
+ * Sample orders (preview only), aged relative to `now`: some in preparation
+ * (one in its last minute, one with a 2-minute snapshot), one completed with
+ * « Terminé », others completed automatically by their timer.
+ */
 export function previewOrders(now: number): Order[] {
   const day = dayKey(new Date(now));
-  const make = (number: number, ageMs: number, items: OrderItem[]): Order => ({
+  const make = (
+    number: number,
+    ageMs: number,
+    items: OrderItem[],
+    over: Partial<Pick<Order, "status" | "completedAt" | "completedBy" | "prepDurationSec">> = {},
+  ): Order => ({
     id: `${day}-${number}`,
     number,
     day,
@@ -37,13 +46,22 @@ export function previewOrders(now: number): Order[] {
     total: items.reduce((s, i) => s + i.price * i.qty, 0),
     createdAt: Timestamp.fromMillis(now - ageMs),
     createdBy: "preview",
+    status: "preparing",
+    completedAt: null,
+    completedBy: null,
+    prepDurationSec: 300,
+    ...over,
   });
   return [
     make(1, 3 * 3600_000, [item(8, 2, ["Tomate"]), item(19, 2, [])]),
-    make(2, 2 * 3600_000, [item(0, 1, ["Tomate", "Piquante"])]),
+    make(2, 2 * 3600_000, [item(0, 1, ["Tomate", "Piquante"])], {
+      status: "completed",
+      completedAt: Timestamp.fromMillis(now - 2 * 3600_000 + 150_000),
+      completedBy: "kitchen",
+    }),
     make(3, 4 * 60_000 + 40_000, [item(8, 1, ["Piquante"]), item(14, 1, [])]),
     make(4, 3 * 60_000, [item(4, 1, ["Tomate", "Piquante"]), item(10, 2, ["Tomate"], "sans oignon"), item(18, 2, [])]),
-    make(5, 90_000, [item(12, 3, ["Piquante"])]),
+    make(5, 90_000, [item(12, 3, ["Piquante"])], { prepDurationSec: 120 }),
     make(6, 12_000, [item(1, 1, ["Tomate"]), item(16, 4, []), item(20, 1, [])]),
   ];
 }
@@ -79,6 +97,7 @@ export function PreviewProvider({ children }: { children: ReactNode }) {
       products: previewProducts,
       sauces: [...DEFAULT_SAUCES],
       orders: previewOrders(Date.now()),
+      prepDurationSec: 300,
       placeOrder: async (orderId, items) => {
         const day = dayKey(new Date());
         const number = (counters.get(day) ?? 0) + 1;

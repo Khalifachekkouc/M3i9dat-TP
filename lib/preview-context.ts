@@ -14,7 +14,9 @@ export interface PreviewData {
   sauces: string[];
   orders: Order[];
   /** Replaces the Firestore save on /preview/cashier, so validating works offline. */
-  placeOrder?: (orderId: string, items: OrderItem[], uid: string) => Promise<PlacedOrder>;
+  placeOrder?: (orderId: string, items: OrderItem[], uid: string, prepDurationSec: number) => Promise<PlacedOrder>;
+  /** settings/kitchen for the preview screens. */
+  prepDurationSec?: number;
 }
 
 export const PreviewContext = createContext<PreviewData | null>(null);

@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { PreviewContext } from "./preview-context";
+import { DEFAULT_PREP_SEC, prepDurationOrDefault } from "./kitchen-settings";
 import { DEFAULT_SAUCES, type Order, type OrderItem, type Product } from "./types";
 
 export type Live<T> =
@@ -47,6 +48,10 @@ export function toOrder(snap: QueryDocumentSnapshot): Order {
     total: Number(d.total ?? 0),
     createdAt: d.createdAt ?? null,
     createdBy: String(d.createdBy ?? ""),
+    status: d.status === "completed" ? "completed" : "preparing",
+    completedAt: d.completedAt ?? null,
+    completedBy: d.completedBy === "kitchen" || d.completedBy === "auto" ? d.completedBy : null,
+    prepDurationSec: prepDurationOrDefault(d.prepDurationSec),
   };
 }
 
@@ -88,6 +93,34 @@ export function useSauces(): Live<{ list: string[]; isDefault: boolean }> {
     );
   }, [preview]);
   return preview ? { status: "ready", data: { list: preview.sauces, isDefault: false }, fromCache: false } : state;
+}
+
+/**
+ * settings/kitchen.prepDurationSec, live. Falls back to 300 s while the
+ * document is missing (isDefault) or unreadable, so the cashier can always sell.
+ */
+export function useKitchenSettings(): Live<{ prepDurationSec: number; isDefault: boolean }> {
+  const preview = useContext(PreviewContext);
+  const [state, setState] = useState<Live<{ prepDurationSec: number; isDefault: boolean }>>({ status: "loading" });
+  useEffect(() => {
+    if (preview) return;
+    return onSnapshot(
+      doc(db, "settings", "kitchen"),
+      (snap) => {
+        const value = snap.get("prepDurationSec");
+        setState({
+          status: "ready",
+          data: { prepDurationSec: prepDurationOrDefault(value), isDefault: !snap.exists() },
+          fromCache: snap.metadata.fromCache,
+        });
+      },
+      (error) => setState({ status: "error", error }),
+    );
+  }, [preview]);
+  if (preview) {
+    return { status: "ready", data: { prepDurationSec: preview.prepDurationSec ?? DEFAULT_PREP_SEC, isDefault: false }, fromCache: false };
+  }
+  return state;
 }
 
 /** Orders of one shop day, by number. */
