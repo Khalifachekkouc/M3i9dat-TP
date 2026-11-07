@@ -16,6 +16,31 @@ import type { Product } from "./types";
 
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
+/**
+ * Photo uploads need Firebase Storage. Until it is enabled on the project
+ * (Blaze plan), leave NEXT_PUBLIC_STORAGE_ENABLED unset: the admin pastes an
+ * image URL instead, and nothing touches Storage.
+ */
+export const storageEnabled = process.env.NEXT_PUBLIC_STORAGE_ENABLED === "true";
+
+/** An image the product can point to: from Storage (with its path) or any public URL. */
+export interface ProductImage {
+  imageUrl: string;
+  imagePath?: string;
+}
+
+/** Same limits as validProduct in firestore.rules: http(s), at most 2048 characters. */
+export function parseImageUrl(input: string): string | null {
+  const value = input.trim();
+  if (!value || value.length > 2048) return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
 export interface ProductDraft {
   name: string;
   price: number;
@@ -59,16 +84,11 @@ export async function deleteImageQuietly(path: string | undefined) {
   }
 }
 
-export async function createProduct(
-  id: string,
-  draft: ProductDraft,
-  image: { imageUrl: string; imagePath: string } | null,
-  order: number,
-) {
+export async function createProduct(id: string, draft: ProductDraft, image: ProductImage | null, order: number) {
   await setDoc(doc(db, "products", id), {
     ...draft,
     imageUrl: image?.imageUrl ?? "",
-    ...(image ? { imagePath: image.imagePath } : {}),
+    ...(image?.imagePath ? { imagePath: image.imagePath } : {}),
     order,
     createdAt: serverTimestamp(),
   });
@@ -77,14 +97,14 @@ export async function createProduct(
 export async function updateProduct(
   id: string,
   draft: ProductDraft,
-  image: { imageUrl: string; imagePath: string } | null | "remove" | "keep",
+  image: ProductImage | null | "remove" | "keep",
 ) {
   const imageFields =
     image === "keep"
       ? {}
       : image === "remove" || image === null
         ? { imageUrl: "", imagePath: deleteField() }
-        : { imageUrl: image.imageUrl, imagePath: image.imagePath };
+        : { imageUrl: image.imageUrl, imagePath: image.imagePath ?? deleteField() };
   await updateDoc(doc(db, "products", id), { ...draft, ...imageFields });
 }
 

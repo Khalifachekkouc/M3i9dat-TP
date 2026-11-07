@@ -172,9 +172,15 @@ async function load(products: SeedProduct[]) {
   const { adminBucket, adminDb, projectId, storageBucket } = await import("./admin-sdk");
   const { FieldValue } = await import("firebase-admin/firestore");
 
-  // Use the shop's sauce list if an admin already saved one.
+  // Use the shop's sauce list if an admin already saved one; otherwise store
+  // the defaults (Tomate, Piquante) so the list exists in Firestore.
   const saucesDoc = await adminDb.doc("settings/sauces").get();
-  const shopSauces = (saucesDoc.get("list") as string[] | undefined) ?? DEFAULT_SAUCES;
+  let shopSauces = saucesDoc.get("list") as string[] | undefined;
+  if (!Array.isArray(shopSauces)) {
+    shopSauces = DEFAULT_SAUCES;
+    await adminDb.doc("settings/sauces").set({ list: DEFAULT_SAUCES });
+    console.log(`Saved the default sauce list: ${DEFAULT_SAUCES.join(", ")}.`);
+  }
 
   let created = 0;
   let replaced = 0;
@@ -234,7 +240,7 @@ async function load(products: SeedProduct[]) {
       imageUrl,
       ...(imagePath ? { imagePath } : {}),
       available: p.available,
-      sauceOptions: p.sauceOptions.filter((s) => shopSauces.includes(s)),
+      sauceOptions: p.sauceOptions.filter((s) => shopSauces!.includes(s)),
       order: (index + 1) * 10,
       createdAt: existing.exists ? existing.get("createdAt") : FieldValue.serverTimestamp(),
     });

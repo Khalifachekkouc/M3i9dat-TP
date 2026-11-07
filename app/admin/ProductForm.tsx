@@ -7,7 +7,9 @@ import {
   createProduct,
   deleteImageQuietly,
   newProductId,
+  parseImageUrl,
   parsePrice,
+  storageEnabled,
   updateProduct,
   uploadProductImage,
   type ProductDraft,
@@ -42,6 +44,9 @@ export function ProductForm({ product, categories, sauces, nextOrder, onClose, o
   const [picked, setPicked] = useState<{ file: File; url: string } | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
+  // Without Storage: the image is a pasted URL (Glovo's photos are links like this).
+  const [imageUrl, setImageUrl] = useState(product?.imageUrl ?? "");
+  const urlRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const nameRef = useRef<HTMLInputElement>(null);
@@ -63,7 +68,10 @@ export function ProductForm({ product, categories, sauces, nextOrder, onClose, o
 
   // Sauces the product offers that are no longer in the shop list stay visible so they can be unticked.
   const sauceChoices = [...sauces, ...sauceOptions.filter((s) => !sauces.includes(s))];
-  const shownImage = picked?.url ?? (removeImage ? null : product?.imageUrl || null);
+  const typedUrl = parseImageUrl(imageUrl);
+  const shownImage = storageEnabled
+    ? (picked?.url ?? (removeImage ? null : product?.imageUrl || null))
+    : typedUrl;
 
   function pickFile(f: File | undefined) {
     setErrors((e) => ({ ...e, image: undefined }));
@@ -87,10 +95,12 @@ export function ProductForm({ product, categories, sauces, nextOrder, onClose, o
     if (!name.trim()) next.name = tp.nameRequired;
     if (Number.isNaN(parsedPrice)) next.price = tp.priceInvalid;
     if (!category.trim()) next.category = tp.categoryRequired;
+    if (!storageEnabled && imageUrl.trim() && !typedUrl) next.image = tp.imageUrlInvalid;
     setErrors(next);
     if (next.name) return nameRef.current?.focus();
     if (next.price) return priceRef.current?.focus();
     if (next.category) return categoryRef.current?.focus();
+    if (next.image) return urlRef.current?.focus();
 
     const draft: ProductDraft = {
       name: name.trim(),
@@ -101,6 +111,20 @@ export function ProductForm({ product, categories, sauces, nextOrder, onClose, o
     };
 
     setSaving(true);
+    if (!storageEnabled) {
+      try {
+        const image = typedUrl ? { imageUrl: typedUrl } : null;
+        if (product) await updateProduct(product.id, draft, image ?? "remove");
+        else await createProduct(productId, draft, image, nextOrder);
+        onSaved();
+      } catch (error) {
+        setErrors({ form: errorMessage(error, tp.saveError, t.common.permissionDenied) });
+      } finally {
+        setSaving(false);
+      }
+      return;
+    }
+
     let uploaded: { imageUrl: string; imagePath: string } | null = null;
     try {
       if (file) {
@@ -215,7 +239,7 @@ export function ProductForm({ product, categories, sauces, nextOrder, onClose, o
 
       <div className="field">
         <label className="field-label" htmlFor={id("image")}>
-          {tp.image}
+          {storageEnabled ? tp.image : tp.imageUrl}
         </label>
         <div className={styles.imageRow}>
           <span className={styles.imagePreview}>
@@ -225,6 +249,34 @@ export function ProductForm({ product, categories, sauces, nextOrder, onClose, o
               <span className={styles.imageNone}>{t.products.noImage}</span>
             )}
           </span>
+          {!storageEnabled ? (
+            <div className={styles.imageControls}>
+              <input
+                ref={urlRef}
+                id={id("image")}
+                name="imageUrl"
+                type="url"
+                inputMode="url"
+                autoComplete="off"
+                spellCheck={false}
+                placeholder="https://"
+                className="input"
+                maxLength={2048}
+                value={imageUrl}
+                onChange={(e) => {
+                  setImageUrl(e.target.value);
+                  setErrors((er) => ({ ...er, image: undefined }));
+                }}
+                aria-invalid={errors.image ? true : undefined}
+                aria-describedby={id("image-help")}
+              />
+              {imageUrl && (
+                <button type="button" className="btn btn-ghost" onClick={() => setImageUrl("")}>
+                  {tp.removeImage}
+                </button>
+              )}
+            </div>
+          ) : (
           <div className={styles.imageControls}>
             <input
               ref={fileRef}
@@ -251,9 +303,11 @@ export function ProductForm({ product, categories, sauces, nextOrder, onClose, o
               </button>
             )}
           </div>
+          )}
         </div>
         <p id={id("image-help")} className="field-help" data-error={errors.image ? "true" : undefined} aria-live="polite">
-          {errors.image ?? (progress !== null ? tp.uploading(progress) : tp.imageHelp)}
+          {errors.image ??
+            (!storageEnabled ? tp.imageUrlHelp : progress !== null ? tp.uploading(progress) : tp.imageHelp)}
         </p>
       </div>
 

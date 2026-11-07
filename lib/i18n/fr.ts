@@ -160,6 +160,10 @@ export const fr = {
       imageHelp: "JPEG, PNG ou WebP, 5 Mo maximum.",
       imageTooBig: "Photo trop lourde (5 Mo maximum).",
       imageWrongType: "Ce fichier n'est pas une image.",
+      imageUrl: "Adresse de la photo",
+      imageUrlHelp:
+        "L'envoi de photos n'est pas disponible : Firebase Storage n'est pas activé sur ce projet. Collez l'adresse (https://…) d'une image en ligne, ou laissez vide.",
+      imageUrlInvalid: "Adresse invalide : elle doit commencer par https:// (2048 caractères maximum).",
       removeImage: "Retirer la photo",
       available: "Disponible à la vente",
       availableShort: "En vente",

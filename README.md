@@ -80,6 +80,11 @@ If the page ever blocks the script or changes shape, it stops without importing 
 | `npm run dev` / `build` / `start` | Next.js |
 | `npm test` | Unit tests (cart and sauce rules, order retries without duplicates, kitchen 5-minute window, new-order detection) |
 | `npm run typecheck`, `npm run lint` | TypeScript, ESLint |
+| `npm run smoke-test` | Checks the **deployed** rules on the live project, role by role (needs `SMOKE_ADMIN_EMAIL`, `SMOKE_ADMIN_PASSWORD`, and the same for `CASHIER` and `KITCHEN`, as environment variables only). Creates test orders and deletes them, resets today's counter if it created it |
+
+## Without Firebase Storage (current setup)
+
+Storage is not enabled on `m3i9dat` (it needs the Blaze plan), so `storage.rules` is in the repo but **not deployed**, products keep their Glovo photo links, and `/admin` shows an image-URL field instead of the upload button. To switch uploads on: enable Storage in the console, `firebase deploy --only storage`, set `NEXT_PUBLIC_STORAGE_ENABLED=true` in `.env.local` (and in the hosting environment), rebuild. Optionally re-import with `--overwrite` to copy the Glovo photos into Storage.
 
 ## Known limits
 
